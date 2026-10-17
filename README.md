@@ -9,4 +9,5 @@ Plataforma SaaS (multi-tenant) de gestão de ponta a ponta para pet shops: tutor
 - **Web:** Next.js + TypeScript na Vercel (região `gru1`)
 - **Banco:** PostgreSQL na VPS em Campinas (Coolify)
 - **WhatsApp:** Evolution API na VPS (Coolify), uma instância por pet shop, conectada por QR Code
-- **Pagamentos:** PIX estático (BR Code gerado pelo sistema, com a chave do pet shop)
+- **Pagamentos dos tutores:** PIX estático (BR Code gerado pelo sistema, com a chave do pet shop)
+- **Assinatura dos pet shops:** Stripe Billing
