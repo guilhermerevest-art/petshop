@@ -1,5 +1,7 @@
 "use client";
 
+import { ActionForm } from "@/components/ui/action-form";
+
 import { useActionState } from "react";
 import { ActionFeedback, fieldError } from "@/components/action-feedback";
 import { Field, Input } from "@/components/ui/field";
@@ -9,20 +11,20 @@ import { acceptInvitationAction, acceptInvitationWithSignUpAction } from "@/serv
 export function AcceptInvitationButton({ invitationId, organizationName }: { invitationId: string; organizationName: string }) {
   const [state, action] = useActionState(acceptInvitationAction, null);
   return (
-    <form action={action} className="flex flex-col gap-4">
+    <ActionForm action={action} className="flex flex-col gap-4">
       <ActionFeedback state={state} />
       <input type="hidden" name="invitationId" value={invitationId} />
       <SubmitButton size="lg" pendingLabel="Entrando na equipe…">
         Entrar na equipe do {organizationName}
       </SubmitButton>
-    </form>
+    </ActionForm>
   );
 }
 
 export function InvitationSignUpForm({ invitationId, email }: { invitationId: string; email: string }) {
   const [state, action] = useActionState(acceptInvitationWithSignUpAction, null);
   return (
-    <form action={action} className="flex flex-col gap-5" noValidate>
+    <ActionForm action={action} className="flex flex-col gap-5" noValidate>
       <ActionFeedback state={state} />
       <input type="hidden" name="invitationId" value={invitationId} />
       <Field label="E-mail" hint="O convite foi enviado para este e-mail.">
@@ -38,6 +40,6 @@ export function InvitationSignUpForm({ invitationId, email }: { invitationId: st
         {(props) => <Input {...props} name="password" type="password" autoComplete="new-password" minLength={8} required />}
       </Field>
       <SubmitButton size="lg" pendingLabel="Criando sua conta…">Criar conta e entrar na equipe</SubmitButton>
-    </form>
+    </ActionForm>
   );
 }

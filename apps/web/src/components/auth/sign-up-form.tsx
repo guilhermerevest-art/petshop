@@ -1,5 +1,7 @@
 "use client";
 
+import { ActionForm } from "@/components/ui/action-form";
+
 import Link from "next/link";
 import { useActionState } from "react";
 import { ActionFeedback, fieldError } from "@/components/action-feedback";
@@ -11,7 +13,7 @@ import { signUpAction } from "@/server/auth-actions";
 export function SignUpForm() {
   const [state, action] = useActionState(signUpAction, null);
   return (
-    <form action={action} className="flex flex-col gap-5" noValidate>
+    <ActionForm action={action} className="flex flex-col gap-5" noValidate>
       <ActionFeedback state={state} />
       <Field label="Nome do pet shop" error={fieldError(state, "shopName")} hint="Como os clientes conhecem vocês.">
         {(props) => <Input {...props} name="shopName" autoComplete="organization" required />}
@@ -42,6 +44,6 @@ export function SignUpForm() {
         {fieldError(state, "terms") ? <p className="text-sm font-medium text-alerta">{fieldError(state, "terms")}</p> : null}
       </div>
       <SubmitButton size="lg" pendingLabel="Criando sua conta…">Criar conta</SubmitButton>
-    </form>
+    </ActionForm>
   );
 }

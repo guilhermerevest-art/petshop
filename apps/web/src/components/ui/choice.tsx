@@ -103,6 +103,7 @@ export function Switch({
 
 export function Checkbox({
   name,
+  value,
   label,
   defaultChecked,
   checked,
@@ -110,6 +111,7 @@ export function Checkbox({
   required,
 }: {
   name: string;
+  value?: string;
   label: ReactNode;
   defaultChecked?: boolean;
   checked?: boolean;
@@ -121,6 +123,7 @@ export function Checkbox({
       <input
         type="checkbox"
         name={name}
+        value={value}
         defaultChecked={defaultChecked}
         checked={checked}
         required={required}

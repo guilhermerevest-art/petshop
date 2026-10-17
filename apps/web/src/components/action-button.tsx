@@ -1,5 +1,7 @@
 "use client";
 
+import { ActionForm } from "@/components/ui/action-form";
+
 import { useActionState } from "react";
 import type { ActionResult } from "@/lib/action-result";
 import { ActionFeedback } from "./action-feedback";
@@ -24,7 +26,7 @@ export function ActionButton({
 }) {
   const [state, formAction] = useActionState(action, null);
   return (
-    <form action={formAction} className="flex flex-col gap-3">
+    <ActionForm action={formAction} className="flex flex-col gap-3">
       {Object.entries(hidden ?? {}).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={value} />
       ))}
@@ -32,6 +34,6 @@ export function ActionButton({
       <SubmitButton variant={variant} size={size} pendingLabel={pendingLabel}>
         {children}
       </SubmitButton>
-    </form>
+    </ActionForm>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
+import { useActionFormPending } from "./action-form";
 import { Button, type ButtonProps } from "./button";
 import { Spinner } from "./spinner";
 
@@ -11,7 +12,9 @@ export function SubmitButton({
   disabled,
   ...props
 }: ButtonProps & { pendingLabel?: string }) {
-  const { pending } = useFormStatus();
+  const formPending = useActionFormPending();
+  const { pending: nativePending } = useFormStatus();
+  const pending = formPending ?? nativePending;
   return (
     <Button type="submit" disabled={pending || disabled} aria-busy={pending} {...props}>
       {pending ? <Spinner /> : null}
