@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@import "@fontsource-variable/lexend";
+
+/* Tokens: ver docs/design.md */
+@theme {
+  --font-sans: "Lexend Variable", "Lexend", ui-sans-serif, system-ui, sans-serif;
+
+  --color-espuma: #f4f7f6;
+  --color-rejunte: #dde5e3;
+  --color-rejunte-forte: #c4d1ce;
+  --color-tinta: #10293a;
+  --color-tinta-suave: #4a6070;
+  --color-azulejo: #0a6b67;
+  --color-azulejo-escuro: #07524f;
+  --color-azulejo-claro: #dcefec;
+  --color-patinho: #f5b82e;
+  --color-patinho-claro: #fff3d1;
+  --color-alerta: #b3261e;
+  --color-alerta-claro: #fce8e6;
+
+  --radius-azulejo: 6px;
+  --radius-campo: 10px;
+  --radius-painel: 14px;
+
+  --animate-encaixe: encaixe 380ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+
+  @keyframes encaixe {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background: var(--color-espuma);
+    color: var(--color-tinta);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 650;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-tinta);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-patinho) 70%, transparent);
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: var(--color-patinho-claro);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
