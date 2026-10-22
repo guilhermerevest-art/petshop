@@ -1,6 +1,6 @@
 # PRD: Plataforma de Gestão para Pet Shops
 
-> **Status:** rascunho v0.4, em discussão
+> **Status:** rascunho v0.5, em discussão
 > **Data:** 17/10/2026
 > **Nome do produto:** a definir (provisório: "PetShop")
 >
@@ -111,7 +111,7 @@ Legenda de fase: **[F0]** fundação da plataforma · **[F1]** MVP de operação
   - cartão de crédito, com renovação automática (principal);
   - boleto, com fatura enviada a cada mês (alternativa).
   - 🔶 PIX: a documentação do Stripe indica que contas brasileiras aceitam só PIX avulso, sem recorrência (Pix Automático). Confirmar no painel da conta antes de oferecer.
-- 🔶 **Período de teste** (ex.: 14 dias). Ver [pergunta 4](#13-perguntas-em-aberto).
+- 🔶 **Período de teste** (ex.: 14 dias). Ver [pergunta 2](#13-perguntas-em-aberto).
 - **Portal de cobrança do Stripe** (Customer Portal): o dono troca o cartão, vê e baixa faturas, muda de plano e cancela, sem precisarmos construir essas telas.
 - O status da assinatura é sincronizado pelos **webhooks do Stripe**: em teste, ativa, pagamento atrasado, cancelada.
 - 🔶 **Inadimplência:** o Stripe tenta cobrar de novo automaticamente e envia e-mails. No sistema:
@@ -119,7 +119,7 @@ Legenda de fase: **[F0]** fundação da plataforma · **[F1]** MVP de operação
   2. após 7 dias: **somente leitura** (consultar e exportar; sem novos agendamentos, vendas ou campanhas). Lembretes de agendamentos já marcados continuam saindo, para não prejudicar os clientes do pet shop;
   3. após 30 dias: **suspenso** (só a tela de pagamento e a exportação de dados).
 - **Cancelamento:** acesso completo até o fim do período pago; depois, somente leitura com exportação por 90 dias; depois, exclusão dos dados (LGPD). 🔶
-- 🔶 **Planos:** começar com um plano único; limites (usuários, mensagens) e planos diferentes só quando houver necessidade. Ver [pergunta 3](#13-perguntas-em-aberto).
+- 🔶 **Planos:** começar com um plano único; limites (usuários, mensagens) e planos diferentes só quando houver necessidade. Ver [pergunta 1](#13-perguntas-em-aberto).
 - **Nota fiscal da mensalidade:** o Stripe não emite NFS-e. A empresa da plataforma emite fora do sistema no início; automação por provedor fiscal depois. 🔶 Validar com o contador.
 
 #### Assistente de configuração inicial [F0]
@@ -178,7 +178,7 @@ A agenda é organizada por **dia e horário**, e cada horário tem um número de
 
 - **[F1] Exceções por data:** feriado (fechado), dia com equipe reduzida (menos vagas), horário estendido.
 - **[F1] Início e fim:** cada pet do agendamento tem início e fim; o fim é o início mais a soma das durações dos serviços daquele pet, conforme o porte.
-- **[F1] Ocupação** 🔶: o pet ocupa uma vaga em **todos os horários que o atendimento dele cobre** (a duração é arredondada para cima até o próximo horário da grade). Com intervalos de 1h:
+- **[F1] Ocupação:** o pet ocupa uma vaga em **todos os horários que o atendimento dele cobre** (a duração é arredondada para cima até o próximo horário da grade). Com intervalos de 1h:
   - banho P de 1h às 9h → ocupa 1 vaga às 9h;
   - banho + tosa G de 2h às 9h → ocupa 1 vaga às 9h e 1 vaga às 10h.
 
@@ -213,7 +213,7 @@ stateDiagram-v2
 - **[F1]** Fila do dia para o tablet dos banhistas (o que chegou, o que está em atendimento, o que está pronto).
 - **[F1]** Quem executou cada etapa (banho, tosa) é registrado no atendimento, não no agendamento. Isso alimenta o histórico e, na Fase 4, as comissões.
 - **[F3]** Agendamento recorrente fixo (ex.: "toda sexta às 9h, a cada 15 dias").
-- 🔶 **[F4]** Vagas separadas por tipo de serviço (ex.: 3 vagas de banho e 1 de tosa por horário), se os pet shops precisarem.
+- **[F1]** As vagas valem para qualquer serviço: o que muda de um serviço para outro é só a duração, cadastrada pelo pet shop.
 - **[F4]** Taxi dog: janelas de busca e entrega e roteiro do motorista.
 
 ### 3.6 Atendimento e checklist
@@ -287,7 +287,7 @@ O pagamento vai **direto da conta do tutor para a conta do pet shop**. A platafo
 - **[F3]** **Aniversário do pet**, com mensagem e cupom.
 - **[F3]** **Reativação:** clientes sem visita há X dias recebem uma campanha.
 - **[F3]** **NPS pós-atendimento:** nota de 0 a 10 pelo WhatsApp. Nota ≤ 6 gera alerta ao gestor; nota ≥ 9 recebe convite para avaliar no Google.
-- **[F3]** **Fidelidade** 🔶 ([pergunta 13](#13-perguntas-em-aberto)): cartão digital (ex.: a cada 10 banhos, 1 grátis), cashback ou pontos. Cada pet shop escolhe e configura o seu.
+- **[F3]** **Fidelidade** 🔶 ([pergunta 10](#13-perguntas-em-aberto)): cartão digital (ex.: a cada 10 banhos, 1 grátis), cashback ou pontos. Cada pet shop escolhe e configura o seu.
 - **[F3]** **Segmentação e campanhas:** filtros por espécie, porte, raça, última visita, ticket médio e serviço; envio com limite de velocidade, só para quem deu opt-in, com opt-out imediato.
 - **[F3]** **Horários ociosos:** sugestão de campanha para preencher dias com muitas vagas sobrando (ex.: "terça à tarde com 10% de desconto").
 - **[F4]** Programa de indicação.
@@ -376,7 +376,7 @@ Cada pet shop usa o **próprio número de WhatsApp**, conectado por ele mesmo de
 - Fora dos pet shops existe o papel **administrador da plataforma**, com acesso ao painel da plataforma.
 - **[F0]** Configurações do pet shop: dados (logo, CNPJ, endereço, fuso horário), horário de funcionamento, grade de capacidade e exceções, faixas de peso de cada porte, chave PIX, WhatsApp, políticas (cancelamento, no-show, limite de desconto), templates de mensagens, assinatura (link para o portal do Stripe).
 - **[F1]** **Log de auditoria** para ações sensíveis: descontos, encaixes, confirmação de PIX, estornos, ajustes de estoque, exclusões, alterações de preço, acessos de suporte da plataforma.
-- **[F4]** Comissão por profissional e por serviço.
+- **[F1]** Comissão opcional: o gestor decide se usa e define o percentual de cada pessoa. O atendimento registra quem fez cada serviço; o valor é calculado sobre os serviços pagos.
 
 ---
 
@@ -473,7 +473,7 @@ Cada pet shop usa o **próprio número de WhatsApp**, conectado por ele mesmo de
 | RN-02 | O telefone WhatsApp é o identificador do tutor, único dentro de cada pet shop, armazenado no formato E.164 (`+55DDXXXXXXXXX`). O mesmo telefone pode ser cliente de pet shops diferentes, com cadastros independentes. |
 | RN-03 | O porte é sugerido pelo peso, com faixas configuráveis por pet shop 🔶 (padrão: P até 10 kg, M de 10 a 25 kg, G de 25 a 45 kg, GG acima de 45 kg), e pode ser ajustado manualmente. Preço e duração dos serviços seguem o porte do pet. |
 | RN-04 | Para cada pet do agendamento: fim = início + soma das durações dos seus serviços conforme o porte. |
-| RN-05 | 🔶 Um pet ocupa uma vaga em cada horário da grade que o seu atendimento cobre. Em nenhum horário o número de pets (excluindo cancelados e no-show) pode passar da capacidade daquele dia e horário, exceto por encaixe feito pela equipe com permissão, registrado na auditoria. |
+| RN-05 | Um pet ocupa uma vaga em cada horário da grade que o seu atendimento cobre. Em nenhum horário o número de pets (excluindo cancelados e no-show) pode passar da capacidade daquele dia e horário, exceto por encaixe feito pela equipe com permissão, registrado na auditoria. |
 | RN-06 | 🔶 O tutor pode cancelar ou reagendar pelo portal até X horas antes (configurável). Depois disso, só falando com o pet shop. |
 | RN-07 | 🔶 No-show é marcado manualmente ou automaticamente após X minutos de tolerância. Após N no-shows, o tutor perde o autoagendamento e só agenda pelo balcão (configurável). |
 | RN-08 | Valores monetários são guardados em centavos (inteiro). Datas e horas são guardadas em UTC e exibidas no fuso horário do pet shop (padrão `America/Sao_Paulo`). |
@@ -792,7 +792,6 @@ Cada fase termina com o sistema em produção e em uso.
 
 - Planos com limites diferentes, se necessário; domínio próprio por pet shop.
 - Relatórios completos com exportação; comissões.
-- Vagas separadas por tipo de serviço, se necessário.
 - Compras, fornecedores, entrada por XML, lote e validade, inventário, curva ABC.
 - Financeiro: contas a pagar e receber, fluxo de caixa, DRE simples.
 - Nota fiscal dos pet shops (NFS-e e NFC-e).
@@ -857,34 +856,28 @@ As metas numéricas serão definidas depois de 30 dias de uso, com a linha de ba
 
 ## 13. Perguntas em aberto
 
-### Agenda
-
-1. **Ocupação:** um serviço que passa de um horário (ex.: tosa de 2h às 9h) ocupa vaga às 9h **e** às 10h? Ou a vaga conta só no horário de chegada do pet? A proposta é ocupar todos os horários cobertos, para não sobrecarregar a equipe.
-2. **Vagas únicas ou por tipo:** as vagas valem para qualquer serviço, ou banho e tosa precisam de vagas separadas (ex.: 3 de banho e 1 de tosa por horário)? A proposta é começar com vagas únicas.
-
 ### Assinatura (Stripe)
 
-3. **Valor e planos:** quanto vai custar? Plano único ou mais de um? Mensal, anual ou os dois?
-4. **Período de teste:** vai ter? Quantos dias? Exigir cartão já no começo do teste?
-5. **Inadimplência:** a proposta (aviso → somente leitura após 7 dias → suspenso após 30) está boa?
-6. **Empresa:** a plataforma já tem CNPJ e conta no Stripe? Os dois são necessários para cobrar em reais no Brasil e emitir as notas das mensalidades.
+1. **Valor e planos:** quanto vai custar? Plano único ou mais de um? Mensal, anual ou os dois?
+2. **Período de teste:** vai ter? Quantos dias? Exigir cartão já no começo do teste?
+3. **Inadimplência:** a proposta (aviso → somente leitura após 7 dias → suspenso após 30) está boa?
+4. **Empresa:** a plataforma já tem CNPJ e conta no Stripe? Os dois são necessários para cobrar em reais no Brasil e emitir as notas das mensalidades.
 
 ### Plataforma
 
-7. **Piloto:** algum pet shop (o seu?) vai usar primeiro para validarmos a operação?
-8. **Nome do produto e domínio.** O portal de cada pet shop em subdomínio (`petshopdojoao.dominio.com.br`) está bom?
-9. **Número de WhatsApp da plataforma:** vamos ter um número próprio para avisar os pet shops e para enviar o código de acesso quando o número do pet shop estiver desconectado?
+5. **Piloto:** algum pet shop (o seu?) vai usar primeiro para validarmos a operação?
+6. **Nome do produto e domínio.** O portal de cada pet shop em subdomínio (`petshopdojoao.dominio.com.br`) está bom?
+7. **Número de WhatsApp da plataforma:** vamos ter um número próprio para avisar os pet shops e para enviar o código de acesso quando o número do pet shop estiver desconectado?
 
 ### Infraestrutura
 
-10. A **Evolution API** já está instalada no Coolify? Qual versão? Qual o tamanho da VPS (CPU e RAM)?
-11. Qual o **plano da Vercel** (Hobby ou Pro)?
+8. A **Evolution API** já está instalada no Coolify? Qual versão? Qual o tamanho da VPS (CPU e RAM)?
+9. Qual o **plano da Vercel** (Hobby ou Pro)?
 
 ### Operação (podem esperar)
 
-12. Os banhistas e tosadores ganham **comissão**?
-13. **Fidelidade:** cartão (ex.: 10º banho grátis), cashback ou pontos?
-14. Querem **vender produtos online** (retirada ou entrega)?
+10. **Fidelidade:** cartão (ex.: 10º banho grátis), cashback ou pontos?
+11. Querem **vender produtos online** (retirada ou entrega)?
 
 ### Respondidas
 
@@ -896,6 +889,9 @@ As metas numéricas serão definidas depois de 30 dias de uso, com a linha de ba
 | Preço e duração variam por porte? | Sim |
 | Pagamento antecipado? | Não obrigatório |
 | Qual PSP para PIX dos tutores? | Nenhum: PIX estático |
+| Serviço longo ocupa mais de um horário? | Sim, ocupa todos os horários que cobre |
+| Vagas por tipo de serviço? | Não: as vagas valem para qualquer serviço; a duração vem do cadastro |
+| Comissão? | Opcional, configurada pelo gestor |
 | Como cobrar os pet shops? | Stripe, cobrando desde o lançamento |
 | Onde está a VPS? | Campinas |
 | Evolution e número? | Cada pet shop conecta o próprio WhatsApp pelo QR Code no sistema |
@@ -911,3 +907,4 @@ As metas numéricas serão definidas depois de 30 dias de uso, com a linha de ba
 | 0.2 | 16/10/2026 | SaaS multi-tenant (onboarding, painel da plataforma, isolamento com RLS); serviços cadastrados por pet shop; agenda com início e fim pela duração dos serviços; PIX estático com conferência manual e comprovante pelo WhatsApp; pagamento antecipado não obrigatório; conexão do WhatsApp por QR Code (uma instância da Evolution por pet shop); VPS em Campinas com Vercel em `gru1`; importação de dados movida para a Fase 3 |
 | 0.3 | 17/10/2026 | Agenda por dia e horário com vagas definidas pelo pet shop (grade de capacidade, exceções, ocupação pela duração, encaixes) no lugar da agenda por profissional; preço e duração por porte confirmados; assinatura dos pet shops pelo Stripe desde a Fase 0 (checkout, portal de cobrança, webhooks, inadimplência); modelo de dados e riscos atualizados |
 | 0.4 | 22/10/2026 | Equipe sem convite por e-mail: o dono ou gerente cria usuário e senha de cada pessoa, redefine senhas e remove acessos; cada pessoa troca a própria senha em "Minha conta" |
+| 0.5 | 22/10/2026 | Ocupação em todos os horários e vagas únicas confirmadas; comissão opcional configurada pelo gestor (Fase 1) |

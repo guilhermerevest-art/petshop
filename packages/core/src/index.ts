@@ -7,3 +7,4 @@ export * from "./pix";
 export * from "./sizes";
 export * from "./text";
 export * from "./time";
+export * from "./zoned";

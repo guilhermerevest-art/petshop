@@ -146,6 +146,16 @@ export function availableStarts(
   return result;
 }
 
+/** Se um atendimento com essa duração cabe começando em `start` (minutos). */
+export function fitsAt(
+  slots: Slot[],
+  bookings: Booking[],
+  start: number,
+  durationMinutes: number,
+): boolean {
+  return availableStarts(slots, bookings, durationMinutes).includes(start);
+}
+
 /** Total de vagas oferecidas na semana (soma de vagas de todos os horários). */
 export function weeklyCapacity(rules: CapacityRule[]): number {
   return WEEKDAYS.reduce<number>(
