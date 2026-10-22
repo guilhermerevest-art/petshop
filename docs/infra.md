@@ -78,7 +78,7 @@ As migrações criam as tabelas, as políticas de RLS e dão acesso ao `petshop_
 
 ## 3. Worker (Coolify)
 
-Processo que monitora as conexões de WhatsApp (e, nas próximas fases, envia lembretes e campanhas).
+Processo que monitora as conexões de WhatsApp e envia os lembretes da véspera (a partir das 18h no fuso de cada pet shop). Nas próximas fases, também as campanhas.
 
 1. *New Resource → Application*, a partir deste repositório no GitHub.
 2. Build pack **Dockerfile**, com `apps/worker/Dockerfile` e contexto na raiz do repositório.
@@ -92,6 +92,7 @@ Processo que monitora as conexões de WhatsApp (e, nas próximas fases, envia le
 | `APP_URL` | Endereço público do sistema |
 | `EVOLUTION_API_URL`, `EVOLUTION_API_KEY` | Os mesmos da aplicação |
 | `SMTP_URL`, `EMAIL_FROM` | Os mesmos da aplicação |
+| `WHATSAPP_MONITOR_CRON`, `REMINDERS_CRON` | Opcionais. Padrão: a cada 5 e a cada 15 minutos |
 
 ## 4. Stripe
 

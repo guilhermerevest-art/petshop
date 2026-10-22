@@ -12,7 +12,15 @@ Plataforma SaaS (multi-tenant) de gestão para pet shops de banho e tosa: agenda
 - isolamento entre pet shops garantido pelo banco (RLS);
 - painel da plataforma e worker de monitoramento do WhatsApp.
 
-A seguir vem a Fase 1 (agenda do dia, clientes e pets, checklist, comanda e caixa). Veja o [roadmap no PRD](docs/PRD.md#10-roadmap-por-fases).
+**Fase 1 (em andamento):**
+
+- clientes e pets, com busca por tutor, celular ou pet, alertas de cuidados e histórico;
+- agenda do dia em azulejos: cada coluna é uma vaga e o pet ocupa todos os horários do atendimento;
+- agendamento em três passos, com cadastro rápido do cliente, horários livres calculados pelas vagas e encaixe (dono e gerente);
+- fila do dia (chegou, em atendimento, pronto, entregue, não veio), cancelamento e dias especiais (feriados e vagas diferentes);
+- WhatsApp automático: confirmação, chegada, pet pronto, cancelamento e lembrete na véspera às 18h.
+
+A seguir: checklist com fotos, comanda, caixa, PIX com conferência e recibo. Veja o [roadmap no PRD](docs/PRD.md#10-roadmap-por-fases).
 
 ## Documentação
 

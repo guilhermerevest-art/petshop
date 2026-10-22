@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { FakeBillingProvider } from "@petshop/integrations";
@@ -97,5 +98,6 @@ export async function simulateStatusAction(formData: FormData): Promise<void> {
       .set(changes)
       .where(eq(subscriptions.organizationId, ctx.organization.id)),
   );
+  revalidatePath("/app", "layout");
   redirect("/app/assinatura/simulada");
 }

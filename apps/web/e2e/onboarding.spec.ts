@@ -146,6 +146,8 @@ test("pet shop novo: conta, assinatura, configuração completa e convite da equ
   // 11. Inadimplência: 10 dias de atraso deixam o sistema só para consulta
   await page.goto("/app/assinatura/simulada");
   await page.getByRole("button", { name: /Atrasada há 10 dias/ }).click();
+  // Espera a ação terminar antes de sair da página.
+  await expect(page.getByText(/só para consulta/)).toBeVisible();
   await page.goto("/app/configuracoes/dados");
   await expect(page.getByText(/só para consulta/)).toBeVisible();
   await page.getByRole("button", { name: "Salvar dados" }).click();

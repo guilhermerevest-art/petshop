@@ -17,6 +17,8 @@ export function loadEnv() {
     emailFrom: process.env.EMAIL_FROM ?? "PetShop <nao-responda@localhost>",
     port: Number(process.env.PORT ?? 8080),
     monitorCron: process.env.WHATSAPP_MONITOR_CRON ?? "*/5 * * * *",
+    /** Confere os lembretes da véspera; cada pet shop recebe a partir das 18h no próprio fuso. */
+    remindersCron: process.env.REMINDERS_CRON ?? "*/15 * * * *",
   };
 }
 

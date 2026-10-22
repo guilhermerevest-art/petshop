@@ -5,11 +5,13 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {
   Building2,
   CalendarClock,
+  CalendarDays,
   CreditCard,
   House,
   ListChecks,
   Menu,
   MessageCircle,
+  PawPrint,
   QrCode,
   Scissors,
   ShieldCheck,
@@ -23,6 +25,8 @@ export interface NavProps {
   showSetup: boolean;
   setupProgress: { done: number; total: number };
   canBilling: boolean;
+  /** Atalhos do dia a dia que o papel da pessoa pode abrir. */
+  daily: { agenda: boolean; customers: boolean };
   /** Itens do menu "Pet shop" que o papel da pessoa pode abrir. */
   settings: {
     schedule: boolean;
@@ -39,6 +43,7 @@ function NavItems({
   showSetup,
   setupProgress,
   canBilling,
+  daily,
   settings,
   isPlatformAdmin,
   onNavigate,
@@ -56,6 +61,16 @@ function NavItems({
               {setupProgress.done}/{setupProgress.total}
             </span>
           </span>
+        </NavLink>
+      ) : null}
+      {daily.agenda ? (
+        <NavLink href="/app/agenda" icon={<CalendarDays />} onNavigate={onNavigate}>
+          Agenda
+        </NavLink>
+      ) : null}
+      {daily.customers ? (
+        <NavLink href="/app/clientes" icon={<PawPrint />} onNavigate={onNavigate}>
+          Clientes
         </NavLink>
       ) : null}
       {Object.values(settings).some(Boolean) ? (

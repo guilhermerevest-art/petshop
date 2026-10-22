@@ -10,8 +10,10 @@ import {
 } from "@petshop/integrations";
 import { loadEnv } from "./env";
 import { monitorWhatsApp } from "./monitor";
+import { sendReminders } from "./reminders";
 
 const QUEUE_MONITOR = "whatsapp-monitor";
+const QUEUE_REMINDERS = "agenda-lembretes";
 
 async function main() {
   const env = loadEnv();
@@ -31,6 +33,13 @@ async function main() {
   await boss.work(QUEUE_MONITOR, async () => {
     const result = await monitorWhatsApp(db, messaging, mailer, env.appUrl);
     console.info("[monitor]", JSON.stringify(result));
+  });
+
+  await boss.createQueue(QUEUE_REMINDERS);
+  await boss.schedule(QUEUE_REMINDERS, env.remindersCron, null, { tz: "America/Sao_Paulo" });
+  await boss.work(QUEUE_REMINDERS, async () => {
+    const result = await sendReminders(db, messaging);
+    if (result.sent || result.failed) console.info("[lembretes]", JSON.stringify(result));
   });
 
   // Saúde do processo para o Coolify.

@@ -16,6 +16,10 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
     showSetup: done < STEP_KEYS.length && can(ctx.role, "shop.edit"),
     setupProgress: { done, total: STEP_KEYS.length },
     canBilling,
+    daily: {
+      agenda: can(ctx.role, "agenda.operate"),
+      customers: can(ctx.role, "customers.manage"),
+    },
     settings: {
       schedule: can(ctx.role, "schedule.edit"),
       services: can(ctx.role, "services.view"),

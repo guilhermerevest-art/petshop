@@ -27,6 +27,8 @@ export function ActionForm({
         {...props}
         aria-busy={pending || undefined}
         onSubmit={(event) => {
+          // Formulários em janelas (portais) propagam o envio pela árvore do React: só trata o próprio.
+          if (event.target !== event.currentTarget) return;
           event.preventDefault();
           if (pending) return;
           const formData = new FormData(event.currentTarget);

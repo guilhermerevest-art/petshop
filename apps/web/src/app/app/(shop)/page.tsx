@@ -3,6 +3,8 @@ import Link from "next/link";
 import { and, count, eq, isNull } from "drizzle-orm";
 import {
   formatBrPhone,
+  formatLocalDate,
+  todayIn,
   SUBSCRIPTION_STATUS_LABELS,
   weeklyCapacity,
   type CapacityRule,
@@ -13,6 +15,7 @@ import { capacityRules, member, pixSettings, services } from "@petshop/db";
 import { buttonClasses } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
 import { WeekGrid } from "@/components/week-grid";
+import { getDayBoard } from "@/lib/agenda";
 import { cn } from "@/lib/cn";
 import { db } from "@/lib/db";
 import { formatShortDate } from "@/lib/format";
@@ -74,7 +77,9 @@ export default async function HomePage(props: PageProps<"/app">) {
   const query = await props.searchParams;
   const orgId = ctx.organization.id;
 
-  const [rules, [serviceCount], pix, whatsapp, [memberCount]] = await Promise.all([
+  const today = todayIn(ctx.profile.timezone);
+  const [board, rules, [serviceCount], pix, whatsapp, [memberCount]] = await Promise.all([
+    getDayBoard(ctx, today),
     inShop(ctx, (tx) =>
       tx.select().from(capacityRules).where(eq(capacityRules.organizationId, orgId)),
     ),
@@ -158,6 +163,44 @@ export default async function HomePage(props: PageProps<"/app">) {
           </div>
         </section>
       ) : null}
+
+      <section aria-labelledby="hoje" className="mb-10">
+        <div className="mb-3 flex items-baseline justify-between gap-2">
+          <h2 id="hoje" className="text-xl">
+            Hoje, <span className="font-normal text-tinta-suave">{formatLocalDate(today)}</span>
+          </h2>
+        </div>
+        <div className="flex flex-col gap-4 rounded-painel border border-rejunte bg-white p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <dl className="flex gap-8">
+            <div>
+              <dt className="text-sm text-tinta-suave">Pets agendados</dt>
+              <dd className="text-3xl font-[650] tabular">{board.entries.length}</dd>
+            </div>
+            <div>
+              <dt className="text-sm text-tinta-suave">Vagas livres</dt>
+              <dd className="text-3xl font-[650] tabular">
+                {Math.max(0, board.capacityTotal - board.occupiedTotal)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-sm text-tinta-suave">Prontos</dt>
+              <dd className="text-3xl font-[650] tabular">
+                {board.entries.filter((e) => e.status === "pronto").length}
+              </dd>
+            </div>
+          </dl>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/app/agenda" className={buttonClasses({ variant: "secondary" })}>
+              Abrir agenda
+            </Link>
+            {can(ctx.role, "agenda.book") ? (
+              <Link href="/app/agenda/novo" className={buttonClasses({})}>
+                Agendar
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      </section>
 
       <section aria-label="Situação do pet shop" className="mb-10">
         <div className="grid grid-cols-1 gap-px overflow-hidden rounded-painel border border-rejunte bg-rejunte sm:grid-cols-2 lg:grid-cols-3">
