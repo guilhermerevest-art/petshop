@@ -42,6 +42,11 @@ const CAPABILITIES = {
   "agenda.overbook": ["owner", "manager"],
   "agenda.operate": ["owner", "manager", "reception", "groomer"],
   "prices.view": ["owner", "manager", "reception"],
+  /** Comanda, pagamentos e caixa. */
+  "sales.manage": ["owner", "manager", "reception"],
+  "products.manage": ["owner", "manager"],
+  "commissions.manage": ["owner", "manager"],
+  "reports.view": ["owner", "manager"],
   "whatsapp.manage": ["owner", "manager"],
   "pix.manage": ["owner"],
   "billing.manage": ["owner"],

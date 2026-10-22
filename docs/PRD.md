@@ -754,7 +754,7 @@ Cada fase termina com o sistema em produção e em uso.
 
 ### Fase 1: MVP de operação ("o pet shop roda no sistema")
 
-> **Andamento (22/10/2026):** prontos tutores e pets, agenda por vagas (quadro do dia, agendamento com cadastro rápido, encaixe, fila com status, cancelamento, dias especiais) e WhatsApp de confirmação, chegada, pet pronto, cancelamento e lembrete na véspera. Faltam checklist com fotos, estoque, comanda, PDV, caixa, PIX com conferência, recibo e comissão.
+> **Andamento (22/10/2026):** prontos tutores e pets; agenda por vagas (quadro do dia, agendamento com cadastro rápido, encaixe, fila com status, cancelamento, dias especiais); WhatsApp de confirmação, chegada, pet pronto, cancelamento e lembrete na véspera; comanda, PDV, pagamentos (PIX estático com conferência manual, dinheiro, cartão), caixa, recibo por link no WhatsApp, produtos e estoque, comissão opcional. Faltam checklist com fotos, recebimento de comprovante pelo WhatsApp, valores a receber e relatórios de vendas.
 
 - Tutores e pets.
 - Serviços com preço e duração por porte.

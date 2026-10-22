@@ -19,6 +19,9 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
     daily: {
       agenda: can(ctx.role, "agenda.operate"),
       customers: can(ctx.role, "customers.manage"),
+      sales: can(ctx.role, "sales.manage"),
+      products: can(ctx.role, "products.manage"),
+      commissions: can(ctx.role, "commissions.manage"),
     },
     settings: {
       schedule: can(ctx.role, "schedule.edit"),

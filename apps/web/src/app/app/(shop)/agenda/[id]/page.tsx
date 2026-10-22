@@ -17,12 +17,14 @@ import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
 import { Panel, PanelSection } from "@/components/ui/panel";
 import { getAppointment } from "@/lib/agenda";
+import { orderOfAppointment } from "@/lib/sales";
 import { capitalize, formatDateTime } from "@/lib/format";
 import { can } from "@/lib/permissions";
 import { hasAlerts } from "@/lib/pets";
 import { requireShop } from "@/lib/shop";
 import { NEXT_STATUS, PET_STATUS_LABELS, statusTone } from "@/lib/status";
 import { confirmAppointmentAction, updatePetStatusAction } from "@/server/agenda-actions";
+import { openAppointmentOrderAction } from "@/server/sales-actions";
 
 export const metadata: Metadata = { title: "Agendamento" };
 
@@ -48,6 +50,13 @@ export default async function AppointmentPage(props: PageProps<"/app/agenda/[id]
     !canceled &&
     pets.some((p) => !["concluido", "nao_compareceu", "cancelado"].includes(p.entry.status));
   const total = pets.reduce((sum, p) => sum + p.services.reduce((s, x) => s + x.priceCents, 0), 0);
+  const canSell = can(ctx.role, "sales.manage");
+  const order = canSell ? await orderOfAppointment(ctx, appointment.id) : undefined;
+  const chargeable =
+    !canceled &&
+    pets.some((p) =>
+      ["check_in", "em_atendimento", "pronto", "concluido"].includes(p.entry.status),
+    );
   const petName = (appointmentPetId: string | null) =>
     pets.find((p) => p.entry.id === appointmentPetId)?.pet.name ?? null;
 
@@ -203,6 +212,30 @@ export default async function AppointmentPage(props: PageProps<"/app/agenda/[id]
               <PanelSection className="flex justify-between font-medium">
                 <span>Total</span>
                 <span className="tabular">{formatBRL(total)}</span>
+              </PanelSection>
+            ) : null}
+            {canSell && (order || chargeable) ? (
+              <PanelSection className="flex flex-col gap-2">
+                {order ? (
+                  <Link
+                    href={`/app/comandas/${order.id}`}
+                    className={buttonClasses({
+                      variant: order.status === "paga" ? "secondary" : "primary",
+                    })}
+                  >
+                    {order.status === "paga"
+                      ? `Comanda ${order.number} paga`
+                      : `Abrir comanda ${order.number}`}
+                  </Link>
+                ) : (
+                  <ActionButton
+                    action={openAppointmentOrderAction}
+                    hidden={{ appointmentId: appointment.id }}
+                    pendingLabel="Abrindo…"
+                  >
+                    Cobrar
+                  </ActionButton>
+                )}
               </PanelSection>
             ) : null}
             {canBook && active ? (

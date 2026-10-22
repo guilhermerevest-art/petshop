@@ -39,6 +39,10 @@ test("telas cabem no celular sem rolagem horizontal", async ({ page }) => {
     "/app/clientes",
     "/app/clientes/novo",
     "/app/configuracoes/horarios",
+    "/app/comandas",
+    "/app/caixa",
+    "/app/produtos",
+    "/app/comissoes",
   ]) {
     await page.goto(path);
     await expectNoHorizontalScroll(page);

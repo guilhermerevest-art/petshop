@@ -11,11 +11,15 @@ import {
   ListChecks,
   Menu,
   MessageCircle,
+  Package,
   PawPrint,
+  Percent,
+  Receipt,
   QrCode,
   Scissors,
   ShieldCheck,
   Users,
+  Wallet,
   X,
 } from "lucide-react";
 import { Brand } from "./brand";
@@ -26,7 +30,13 @@ export interface NavProps {
   setupProgress: { done: number; total: number };
   canBilling: boolean;
   /** Atalhos do dia a dia que o papel da pessoa pode abrir. */
-  daily: { agenda: boolean; customers: boolean };
+  daily: {
+    agenda: boolean;
+    customers: boolean;
+    sales: boolean;
+    products: boolean;
+    commissions: boolean;
+  };
   /** Itens do menu "Pet shop" que o papel da pessoa pode abrir. */
   settings: {
     schedule: boolean;
@@ -71,6 +81,26 @@ function NavItems({
       {daily.customers ? (
         <NavLink href="/app/clientes" icon={<PawPrint />} onNavigate={onNavigate}>
           Clientes
+        </NavLink>
+      ) : null}
+      {daily.sales ? (
+        <>
+          <NavLink href="/app/comandas" icon={<Receipt />} onNavigate={onNavigate}>
+            Comandas
+          </NavLink>
+          <NavLink href="/app/caixa" icon={<Wallet />} onNavigate={onNavigate}>
+            Caixa
+          </NavLink>
+        </>
+      ) : null}
+      {daily.products ? (
+        <NavLink href="/app/produtos" icon={<Package />} onNavigate={onNavigate}>
+          Produtos e estoque
+        </NavLink>
+      ) : null}
+      {daily.commissions ? (
+        <NavLink href="/app/comissoes" icon={<Percent />} onNavigate={onNavigate}>
+          Comissões
         </NavLink>
       ) : null}
       {Object.values(settings).some(Boolean) ? (

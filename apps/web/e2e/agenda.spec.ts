@@ -1,43 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
-import { signUp, snap, uniqueEmail } from "./helpers";
-
-/** Próximo dia útil a partir de amanhã (a grade sugerida atende de segunda a sexta). */
-function nextWeekday(): string {
-  const date = new Date();
-  do date.setDate(date.getDate() + 1);
-  while (date.getDay() === 0 || date.getDay() === 6);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
-async function bookNewCustomer(
-  page: Page,
-  data: {
-    date: string;
-    name: string;
-    phone: string;
-    pet: string;
-    weight: string;
-    service: RegExp;
-    time: string;
-  },
-) {
-  await page.goto(`/app/agenda/novo?data=${data.date}`);
-  await page.getByRole("button", { name: "Cadastrar cliente novo" }).click();
-  const dialog = page.getByRole("dialog");
-  await dialog.getByLabel("Nome do tutor").fill(data.name);
-  await dialog.getByLabel("Celular com WhatsApp").fill(data.phone);
-  await dialog.getByLabel("Nome do pet").fill(data.pet);
-  await dialog.getByLabel("Peso (kg)").fill(data.weight);
-  await dialog.getByRole("button", { name: "Cadastrar e continuar" }).click();
-  await expect(dialog).toBeHidden();
-  await expect(page.getByText(data.name)).toBeVisible();
-  await page.getByRole("button", { name: data.service }).click();
-  await page.getByRole("button", { name: data.time, exact: true }).click();
-  await page.getByRole("button", { name: "Confirmar agendamento" }).click();
-  await expect(page).toHaveURL(new RegExp(`/app/agenda\\?data=${data.date}&novo=`));
-  await expect(page.getByText("Agendamento criado.")).toBeVisible();
-}
+import { expect, test } from "@playwright/test";
+import { bookNewCustomer, nextWeekday, signUp, snap, uniqueEmail } from "./helpers";
 
 test("agenda: agendar, respeitar as vagas, operar a fila e cancelar", async ({ page }) => {
   test.setTimeout(240_000);

@@ -22,6 +22,13 @@
       "when": 1792672591041,
       "tag": "0002_operacao",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792693112388,
+      "tag": "0003_vendas_caixa_estoque",
+      "breakpoints": true
     }
   ]
 }

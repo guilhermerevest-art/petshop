@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { confirmationMessage, reminderMessage } from "../src/messages";
+import {
+  confirmationMessage,
+  pixChargeMessages,
+  receiptMessage,
+  reminderMessage,
+} from "../src/messages";
 
 describe("mensagens para o tutor", () => {
   it("confirmação com data, hora, pets e valor", () => {
@@ -29,5 +34,29 @@ describe("mensagens para o tutor", () => {
         ],
       }),
     ).toContain("amanhã às 10:00 tem Mel e Bidu");
+  });
+
+  it("recibo com valor e link", () => {
+    const text = receiptMessage({
+      shopName: "Bom Banho",
+      customerName: "Carla Mendes",
+      number: 42,
+      totalCents: 7500,
+      url: "https://app.exemplo.com.br/recibo/abc",
+    });
+    expect(text).toContain("Obrigado, Carla!");
+    expect(text).toContain("R$\u00a075,00");
+    expect(text).toContain("comanda 42: https://app.exemplo.com.br/recibo/abc");
+  });
+
+  it("PIX vem em duas mensagens, a segunda só com o código", () => {
+    const [intro, code] = pixChargeMessages({
+      shopName: "Bom Banho",
+      customerName: "Carla",
+      totalCents: 5000,
+      payload: "000201...",
+    });
+    expect(intro).toContain("PIX copia e cola");
+    expect(code).toBe("000201...");
   });
 });

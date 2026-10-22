@@ -65,3 +65,30 @@ export function cancellationMessage(input: {
 }): string {
   return `Olá, ${firstName(input.customerName)}. O agendamento de ${input.dateLabel}, às ${formatTime(input.startMinutes)}, no ${input.shopName} foi cancelado. Para marcar outro horário, é só responder esta mensagem.`;
 }
+
+/** Cobrança por PIX: valor e o "copia e cola" numa mensagem separada, fácil de copiar no celular. */
+export function pixChargeMessages(input: {
+  shopName: string;
+  customerName: string;
+  totalCents: number;
+  payload: string;
+}): [string, string] {
+  return [
+    `Olá, ${firstName(input.customerName)}! Segue o PIX de ${formatBRL(input.totalCents)} do ${input.shopName}. Copie o código da próxima mensagem e cole no app do seu banco, em "PIX copia e cola".`,
+    input.payload,
+  ];
+}
+
+export function receiptMessage(input: {
+  shopName: string;
+  customerName: string;
+  number: number;
+  totalCents: number;
+  url: string;
+}): string {
+  return [
+    `Obrigado, ${firstName(input.customerName)}! Recebemos ${formatBRL(input.totalCents)} no ${input.shopName}. 💚`,
+    "",
+    `Recibo da comanda ${input.number}: ${input.url}`,
+  ].join("\n");
+}

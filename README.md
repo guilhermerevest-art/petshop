@@ -20,7 +20,14 @@ Plataforma SaaS (multi-tenant) de gestão para pet shops de banho e tosa: agenda
 - fila do dia (chegou, em atendimento, pronto, entregue, não veio), cancelamento e dias especiais (feriados e vagas diferentes);
 - WhatsApp automático: confirmação, chegada, pet pronto, cancelamento e lembrete na véspera às 18h.
 
-A seguir: checklist com fotos, comanda, caixa, PIX com conferência e recibo. Veja o [roadmap no PRD](docs/PRD.md#10-roadmap-por-fases).
+- comanda do atendimento (montada com os serviços feitos) ou venda de balcão, com produtos, itens avulsos e desconto;
+- pagamento dividido em PIX (QR Code com o valor na tela ou enviado pelo WhatsApp, conferido manualmente), dinheiro com troco e cartão;
+- caixa com abertura, movimento por forma de pagamento e fechamento com conferência do dinheiro;
+- recibo pelo WhatsApp com link para a página do recibo (imprimir ou salvar em PDF);
+- produtos e estoque: entrada, perda, contagem, baixa automática na venda e aviso de estoque baixo;
+- comissão opcional por pessoa, calculada quando a comanda é paga, com relatório por período.
+
+A seguir: checklist do atendimento com fotos e relatórios de vendas. Veja o [roadmap no PRD](docs/PRD.md#10-roadmap-por-fases).
 
 ## Documentação
 
