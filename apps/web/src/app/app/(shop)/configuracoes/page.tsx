@@ -11,11 +11,17 @@ export default async function SettingsIndexPage() {
   await requireShop();
   return (
     <>
-      <PageHeader title="Configurações" description="Tudo o que define como o pet shop funciona no sistema." />
+      <PageHeader
+        title="Configurações"
+        description="Tudo o que define como o pet shop funciona no sistema."
+      />
       <ul className="max-w-2xl overflow-hidden rounded-painel border border-rejunte bg-rejunte">
         {STEPS.map((step) => (
           <li key={step.key} className="[&:not(:first-child)]:mt-px">
-            <Link href={`/app/configuracoes/${step.key}`} className="flex items-center gap-4 bg-white px-5 py-4 hover:bg-espuma">
+            <Link
+              href={`/app/configuracoes/${step.key}`}
+              className="flex items-center gap-4 bg-white px-5 py-4 hover:bg-espuma"
+            >
               <span className="min-w-0 flex-1">
                 <span className="block font-medium">{step.title}</span>
                 <span className="block text-[15px] text-tinta-suave">{step.summary}</span>

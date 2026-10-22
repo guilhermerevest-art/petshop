@@ -27,8 +27,33 @@ export interface ShopDataValues {
 }
 
 const UFS = [
-  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN",
-  "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
 ];
 
 const TIMEZONES = [
@@ -70,7 +95,13 @@ export function ShopDataForm({ values, wizard }: { values: ShopDataValues; wizar
     setLookup("loading");
     try {
       const response = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
-      const data = (await response.json()) as { erro?: boolean; logradouro?: string; bairro?: string; localidade?: string; uf?: string };
+      const data = (await response.json()) as {
+        erro?: boolean;
+        logradouro?: string;
+        bairro?: string;
+        localidade?: string;
+        uf?: string;
+      };
       if (data.erro) {
         setLookup("not-found");
         return;
@@ -97,20 +128,43 @@ export function ShopDataForm({ values, wizard }: { values: ShopDataValues; wizar
         <PanelSection className="flex flex-col gap-5">
           <ActionFeedback state={state} />
           <h2 className="text-lg">Pet shop</h2>
-          <Field label="Nome do pet shop" error={fieldError(state, "name")} hint="Aparece para os clientes nas mensagens e no portal.">
+          <Field
+            label="Nome do pet shop"
+            error={fieldError(state, "name")}
+            hint="Aparece para os clientes nas mensagens e no portal."
+          >
             {(props) => <Input {...props} name="name" defaultValue={values.name} required />}
           </Field>
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="WhatsApp ou telefone de contato" error={fieldError(state, "phone")}>
-              {(props) => <Input {...props} name="phone" type="tel" inputMode="tel" defaultValue={values.phone} placeholder="(19) 98765-4321" required />}
+              {(props) => (
+                <Input
+                  {...props}
+                  name="phone"
+                  type="tel"
+                  inputMode="tel"
+                  defaultValue={values.phone}
+                  placeholder="(19) 98765-4321"
+                  required
+                />
+              )}
             </Field>
             <Field label="E-mail de contato" optional error={fieldError(state, "email")}>
-              {(props) => <Input {...props} name="email" type="email" defaultValue={values.email} />}
+              {(props) => (
+                <Input {...props} name="email" type="email" defaultValue={values.email} />
+              )}
             </Field>
           </div>
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="CNPJ ou CPF" optional error={fieldError(state, "document")} hint="Aparece nos recibos.">
-              {(props) => <Input {...props} name="document" defaultValue={values.document} inputMode="text" />}
+            <Field
+              label="CNPJ ou CPF"
+              optional
+              error={fieldError(state, "document")}
+              hint="Aparece nos recibos."
+            >
+              {(props) => (
+                <Input {...props} name="document" defaultValue={values.document} inputMode="text" />
+              )}
             </Field>
             <Field label="Razão social" optional error={fieldError(state, "legalName")}>
               {(props) => <Input {...props} name="legalName" defaultValue={values.legalName} />}
@@ -154,27 +208,58 @@ export function ShopDataForm({ values, wizard }: { values: ShopDataValues; wizar
           <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_140px]">
             <Field label="Rua" optional error={fieldError(state, "addressStreet")}>
               {(props) => (
-                <Input {...props} name="addressStreet" value={address.street} onChange={(e) => setAddress((c) => ({ ...c, street: e.target.value }))} autoComplete="address-line1" />
+                <Input
+                  {...props}
+                  name="addressStreet"
+                  value={address.street}
+                  onChange={(e) => setAddress((c) => ({ ...c, street: e.target.value }))}
+                  autoComplete="address-line1"
+                />
               )}
             </Field>
             <Field label="Número" optional error={fieldError(state, "addressNumber")}>
-              {(props) => <Input {...props} ref={numberRef} name="addressNumber" defaultValue={values.addressNumber} />}
+              {(props) => (
+                <Input
+                  {...props}
+                  ref={numberRef}
+                  name="addressNumber"
+                  defaultValue={values.addressNumber}
+                />
+              )}
             </Field>
           </div>
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Complemento" optional>
-              {(props) => <Input {...props} name="addressComplement" defaultValue={values.addressComplement} />}
+              {(props) => (
+                <Input
+                  {...props}
+                  name="addressComplement"
+                  defaultValue={values.addressComplement}
+                />
+              )}
             </Field>
             <Field label="Bairro" optional>
               {(props) => (
-                <Input {...props} name="addressDistrict" value={address.district} onChange={(e) => setAddress((c) => ({ ...c, district: e.target.value }))} />
+                <Input
+                  {...props}
+                  name="addressDistrict"
+                  value={address.district}
+                  onChange={(e) => setAddress((c) => ({ ...c, district: e.target.value }))}
+                />
               )}
             </Field>
           </div>
           <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_120px]">
             <Field label="Cidade" error={fieldError(state, "addressCity")}>
               {(props) => (
-                <Input {...props} name="addressCity" value={address.city} onChange={(e) => setAddress((c) => ({ ...c, city: e.target.value }))} autoComplete="address-level2" required />
+                <Input
+                  {...props}
+                  name="addressCity"
+                  value={address.city}
+                  onChange={(e) => setAddress((c) => ({ ...c, city: e.target.value }))}
+                  autoComplete="address-level2"
+                  required
+                />
               )}
             </Field>
             <Field label="Estado" error={fieldError(state, "addressState")}>
@@ -183,7 +268,13 @@ export function ShopDataForm({ values, wizard }: { values: ShopDataValues; wizar
                   {...props}
                   name="addressState"
                   value={address.state}
-                  onChange={(e) => setAddress((c) => ({ ...c, state: e.target.value, timezone: timezoneForState(e.target.value) }))}
+                  onChange={(e) =>
+                    setAddress((c) => ({
+                      ...c,
+                      state: e.target.value,
+                      timezone: timezoneForState(e.target.value),
+                    }))
+                  }
                   required
                 >
                   <option value="">UF</option>
@@ -198,7 +289,12 @@ export function ShopDataForm({ values, wizard }: { values: ShopDataValues; wizar
           </div>
           <Field label="Fuso horário" hint="Usado na agenda e no horário das mensagens.">
             {(props) => (
-              <Select {...props} name="timezone" value={address.timezone} onChange={(e) => setAddress((c) => ({ ...c, timezone: e.target.value }))}>
+              <Select
+                {...props}
+                name="timezone"
+                value={address.timezone}
+                onChange={(e) => setAddress((c) => ({ ...c, timezone: e.target.value }))}
+              >
                 {TIMEZONES.map((tz) => (
                   <option key={tz.value} value={tz.value}>
                     {tz.label}

@@ -4,7 +4,10 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 
-const MIGRATIONS_FOLDER = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../migrations");
+const MIGRATIONS_FOLDER = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../migrations",
+);
 
 /**
  * Aplica as migrações com o papel dono das tabelas e, em seguida:
@@ -37,6 +40,18 @@ export async function runMigrations(ownerUrl: string, appRole = "petshop_app"): 
     `;
     for (const { name } of tables) {
       await client.unsafe(`ALTER TABLE "${name}" FORCE ROW LEVEL SECURITY`);
+    }
+    const [app] = await client<{ bypass: boolean; login: boolean }[]>`
+      SELECT (rolsuper OR rolbypassrls) AS bypass, rolcanlogin AS login FROM pg_roles WHERE rolname = ${appRole}
+    `;
+    if (app?.bypass) {
+      console.warn(
+        `ATENÇÃO: o papel ${appRole} é superusuário ou tem BYPASSRLS. A aplicação vai se recusar a usá-lo.`,
+      );
+    } else if (app && !app.login) {
+      console.warn(
+        `O papel ${appRole} ainda não tem login. Defina a senha: ALTER ROLE ${appRole} LOGIN PASSWORD '...';`,
+      );
     }
   } finally {
     await client.end();

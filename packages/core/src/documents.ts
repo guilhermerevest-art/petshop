@@ -28,7 +28,9 @@ export function isValidCnpj(input: string): boolean {
   const values = cnpj.split("").map((char) => char.charCodeAt(0) - 48);
   const check = (length: number) => {
     const weights =
-      length === 12 ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2] : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+      length === 12
+        ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+        : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
     let sum = 0;
     for (let i = 0; i < length; i++) sum += values[i]! * weights[i]!;
     const rest = sum % 11;

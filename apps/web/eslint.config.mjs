@@ -8,7 +8,10 @@ const config = [
   {
     rules: {
       // Server Actions usadas com useActionState recebem o estado anterior como primeiro argumento.
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
     },
   },
 ];

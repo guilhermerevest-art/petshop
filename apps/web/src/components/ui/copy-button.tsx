@@ -4,7 +4,12 @@ import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { Button, type ButtonProps } from "./button";
 
-export function CopyButton({ value, label = "Copiar", copiedLabel = "Copiado", ...props }: ButtonProps & { value: string; label?: string; copiedLabel?: string }) {
+export function CopyButton({
+  value,
+  label = "Copiar",
+  copiedLabel = "Copiado",
+  ...props
+}: ButtonProps & { value: string; label?: string; copiedLabel?: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <Button

@@ -9,7 +9,10 @@ import { authErrorMessage, cookieHeaderFrom } from "@/lib/auth-errors";
 import { fail, zodFieldErrors, type ActionResult } from "@/lib/action-result";
 import { getInvitation } from "@/lib/invitations";
 
-export async function acceptInvitationAction(_: ActionResult | null, formData: FormData): Promise<ActionResult> {
+export async function acceptInvitationAction(
+  _: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
   const invitationId = String(formData.get("invitationId") ?? "");
   try {
     await auth().api.acceptInvitation({ body: { invitationId }, headers: await headers() });
@@ -35,9 +38,11 @@ export async function acceptInvitationWithSignUpAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const parsed = signUpSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
+  if (!parsed.success)
+    return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
   const invitation = await getInvitation(parsed.data.invitationId);
-  if (!invitation || invitation.state !== "pending") return fail("Este convite não está mais disponível.");
+  if (!invitation || invitation.state !== "pending")
+    return fail("Este convite não está mais disponível.");
 
   try {
     const { headers: responseHeaders } = await auth().api.signUpEmail({

@@ -4,7 +4,12 @@ import { formatPairingCode } from "../src/messaging";
 
 type Call = { method: string; url: string; body: unknown; apikey: string | null };
 
-function fakeFetch(routes: Record<string, { status?: number; body: unknown } | ((call: Call) => { status?: number; body: unknown })>) {
+function fakeFetch(
+  routes: Record<
+    string,
+    { status?: number; body: unknown } | ((call: Call) => { status?: number; body: unknown })
+  >,
+) {
   const calls: Call[] = [];
   const impl = (async (input: string | URL | Request, init?: RequestInit) => {
     const url = String(input);
@@ -29,11 +34,20 @@ function fakeFetch(routes: Record<string, { status?: number; body: unknown } | (
 describe("Evolution API", () => {
   it("cria a instância com webhook quando ela não existe", async () => {
     const { calls, impl } = fakeFetch({
-      "GET /instance/fetchInstances?instanceName=ps_1": { status: 404, body: { message: "not found" } },
+      "GET /instance/fetchInstances?instanceName=ps_1": {
+        status: 404,
+        body: { message: "not found" },
+      },
       "POST /instance/create": { status: 201, body: { instance: { instanceName: "ps_1" } } },
     });
-    const evo = new EvolutionProvider({ baseUrl: "https://evo.test/", apiKey: "global-key", fetch: impl });
-    await evo.ensureInstance("ps_1", { webhookUrl: "https://app.test/api/webhooks/evolution?token=x" });
+    const evo = new EvolutionProvider({
+      baseUrl: "https://evo.test/",
+      apiKey: "global-key",
+      fetch: impl,
+    });
+    await evo.ensureInstance("ps_1", {
+      webhookUrl: "https://app.test/api/webhooks/evolution?token=x",
+    });
     expect(calls).toHaveLength(2);
     expect(calls[1]!.apikey).toBe("global-key");
     expect(calls[1]!.body).toMatchObject({
@@ -41,7 +55,9 @@ describe("Evolution API", () => {
       integration: "WHATSAPP-BAILEYS",
       webhook: { enabled: true, url: "https://app.test/api/webhooks/evolution?token=x" },
     });
-    expect((calls[1]!.body as { webhook: { events: string[] } }).webhook.events).toContain("CONNECTION_UPDATE");
+    expect((calls[1]!.body as { webhook: { events: string[] } }).webhook.events).toContain(
+      "CONNECTION_UPDATE",
+    );
   });
 
   it("só atualiza o webhook quando a instância já existe", async () => {
@@ -55,12 +71,16 @@ describe("Evolution API", () => {
       "GET https://evo.test/instance/fetchInstances?instanceName=ps_1",
       "POST https://evo.test/webhook/set/ps_1",
     ]);
-    expect(calls[1]!.body).toMatchObject({ webhook: { url: "https://app.test/hook", enabled: true } });
+    expect(calls[1]!.body).toMatchObject({
+      webhook: { url: "https://app.test/hook", enabled: true },
+    });
   });
 
   it("devolve o QR Code enquanto aguarda a leitura", async () => {
     const { impl } = fakeFetch({
-      "GET /instance/connect/ps_1": { body: { pairingCode: null, code: "2@abc", base64: "data:image/png;base64,AAA", count: 2 } },
+      "GET /instance/connect/ps_1": {
+        body: { pairingCode: null, code: "2@abc", base64: "data:image/png;base64,AAA", count: 2 },
+      },
     });
     const evo = new EvolutionProvider({ baseUrl: "https://evo.test", apiKey: "k", fetch: impl });
     expect(await evo.connect("ps_1")).toEqual({
@@ -81,9 +101,17 @@ describe("Evolution API", () => {
 
   it("lê número e perfil da instância conectada", async () => {
     const { impl } = fakeFetch({
-      "GET /instance/connectionState/ps_1": { body: { instance: { instanceName: "ps_1", state: "open" } } },
+      "GET /instance/connectionState/ps_1": {
+        body: { instance: { instanceName: "ps_1", state: "open" } },
+      },
       "GET /instance/fetchInstances?instanceName=ps_1": {
-        body: [{ ownerJid: "5519987654321@s.whatsapp.net", profileName: "Pet Shop Bom Banho", profilePicUrl: "https://pic" }],
+        body: [
+          {
+            ownerJid: "5519987654321@s.whatsapp.net",
+            profileName: "Pet Shop Bom Banho",
+            profilePicUrl: "https://pic",
+          },
+        ],
       },
     });
     const evo = new EvolutionProvider({ baseUrl: "https://evo.test", apiKey: "k", fetch: impl });
@@ -99,7 +127,9 @@ describe("Evolution API", () => {
     const { calls, impl } = fakeFetch({
       "GET /instance/connectionState/ps_1": { body: { instance: { state: "connecting" } } },
       "DELETE /instance/logout/ps_1": { body: { status: "SUCCESS" } },
-      "GET /instance/connect/ps_1?number=5519987654321": { body: { pairingCode: "ABCD1234", count: 1 } },
+      "GET /instance/connect/ps_1?number=5519987654321": {
+        body: { pairingCode: "ABCD1234", count: 1 },
+      },
     });
     const evo = new EvolutionProvider({ baseUrl: "https://evo.test", apiKey: "k", fetch: impl });
     const result = await evo.requestPairingCode("ps_1", "5519987654321");
@@ -124,7 +154,10 @@ describe("Evolution API", () => {
       data: { state: "open", wuid: "5519987654321@s.whatsapp.net", profileName: "Bom Banho" },
     });
     expect(event).not.toBeNull();
-    expect(connectionFromEvent(event!)).toMatchObject({ state: "open", phoneNumber: "5519987654321" });
+    expect(connectionFromEvent(event!)).toMatchObject({
+      state: "open",
+      phoneNumber: "5519987654321",
+    });
     expect(parseEvolutionWebhook({ foo: 1 })).toBeNull();
   });
 });

@@ -6,6 +6,7 @@ import { closeDb, createDb, type Database } from "../src/client";
 import { runMigrations } from "../src/migrate";
 import { organization, services, shopProfiles } from "../src/schema";
 import { withSystem, withTenant } from "../src/tenancy";
+import { checkDatabaseRole } from "../src/safety";
 
 const APP_URL =
   process.env.TEST_DATABASE_URL ?? "postgres://petshop_app:petshop_app@localhost:5432/petshop_test";
@@ -83,7 +84,10 @@ describe("isolamento entre pet shops (RLS)", () => {
 
   it("o contexto de sistema enxerga todos os pet shops", async () => {
     const rows = await withSystem(db, (tx) =>
-      tx.select().from(services).where(inArray(services.organizationId, [orgA, orgB])),
+      tx
+        .select()
+        .from(services)
+        .where(inArray(services.organizationId, [orgA, orgB])),
     );
     expect(rows).toHaveLength(2);
   });
@@ -95,6 +99,18 @@ describe("isolamento entre pet shops (RLS)", () => {
       expect(rows).toHaveLength(0);
     } finally {
       await owner.end();
+    }
+  });
+
+  it("detecta quando a conexão ignora o RLS (superusuário)", async () => {
+    expect((await checkDatabaseRole(db)).bypassesRls).toBe(false);
+    const superUrl =
+      process.env.TEST_DATABASE_URL_SUPERUSER ?? "postgres://postgres@localhost:5432/petshop_test";
+    const superDb = createDb(superUrl, { max: 1 });
+    try {
+      expect((await checkDatabaseRole(superDb)).bypassesRls).toBe(true);
+    } finally {
+      await closeDb(superDb);
     }
   });
 });

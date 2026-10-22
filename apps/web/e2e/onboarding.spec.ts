@@ -1,7 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { signUp, snap, uniqueEmail } from "./helpers";
 
-test("pet shop novo: conta, assinatura, configuração completa e convite da equipe", async ({ page, browser }) => {
+test("pet shop novo: conta, assinatura, configuração completa e convite da equipe", async ({
+  page,
+  browser,
+}) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Agenda, WhatsApp e PIX");
   await snap(page, "01-site");
@@ -50,7 +53,9 @@ test("pet shop novo: conta, assinatura, configuração completa e convite da equ
   await page.getByText("CNPJ", { exact: true }).click();
   await page.getByLabel("Chave PIX").fill("11.222.333/0001-81");
   await page.getByRole("button", { name: "Salvar chave PIX" }).click();
-  await expect(page.getByRole("heading", { name: "Teste antes de usar com clientes" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Teste antes de usar com clientes" }),
+  ).toBeVisible();
   await expect(page.getByRole("img", { name: /QR Code PIX de teste/ })).toBeVisible();
   await snap(page, "06-pix");
   await page.getByRole("link", { name: "Continuar" }).click();
@@ -91,7 +96,9 @@ test("pet shop novo: conta, assinatura, configuração completa e convite da equ
   const guest = await browser.newContext();
   const guestPage = await guest.newPage();
   await guestPage.goto(inviteLink);
-  await expect(guestPage.getByRole("heading", { name: /convidado para o Pet Shop Bom Banho/ })).toBeVisible();
+  await expect(
+    guestPage.getByRole("heading", { name: /convidado para o Pet Shop Bom Banho/ }),
+  ).toBeVisible();
   await guestPage.getByLabel("Seu nome").fill("Bruno Lima");
   await guestPage.getByLabel("Seu celular com WhatsApp").fill("(19) 99876-5432");
   await guestPage.getByLabel("Crie uma senha").fill("senha-forte-456");

@@ -28,7 +28,12 @@ function tenantCondition(column: AnyPgColumn): SQL {
 
 function tenantPolicy(column: AnyPgColumn) {
   const condition = tenantCondition(column);
-  return pgPolicy("tenant_isolation", { as: "permissive", for: "all", using: condition, withCheck: condition });
+  return pgPolicy("tenant_isolation", {
+    as: "permissive",
+    for: "all",
+    using: condition,
+    withCheck: condition,
+  });
 }
 
 const organizationId = () =>
@@ -45,7 +50,14 @@ const updatedAt = () =>
 
 export type SizeRangesJson = { P: number; M: number; G: number };
 export type OnboardingJson = Partial<Record<OnboardingStep, string>>;
-export const ONBOARDING_STEPS = ["dados", "horarios", "pix", "whatsapp", "equipe", "servicos"] as const;
+export const ONBOARDING_STEPS = [
+  "dados",
+  "horarios",
+  "pix",
+  "whatsapp",
+  "equipe",
+  "servicos",
+] as const;
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
 /** Dados do pet shop além do que a autenticação guarda (nome, slug, logo ficam em `organization`). */
@@ -71,7 +83,10 @@ export const shopProfiles = pgTable(
       .$type<SizeRangesJson>()
       .notNull()
       .default(sql`'{"P":10,"M":25,"G":45}'::jsonb`),
-    onboarding: jsonb("onboarding").$type<OnboardingJson>().notNull().default(sql`'{}'::jsonb`),
+    onboarding: jsonb("onboarding")
+      .$type<OnboardingJson>()
+      .notNull()
+      .default(sql`'{}'::jsonb`),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -91,7 +106,10 @@ export const capacityRules = pgTable(
     slots: smallint("slots").notNull(),
     createdAt: createdAt(),
   },
-  (t) => [index("capacity_rules_org_idx").on(t.organizationId, t.weekday), tenantPolicy(t.organizationId)],
+  (t) => [
+    index("capacity_rules_org_idx").on(t.organizationId, t.weekday),
+    tenantPolicy(t.organizationId),
+  ],
 );
 
 /** Exceções por data: fechado (slots = 0) ou vagas diferentes numa faixa. */
@@ -107,7 +125,10 @@ export const capacityExceptions = pgTable(
     reason: text("reason"),
     createdAt: createdAt(),
   },
-  (t) => [index("capacity_exceptions_org_date_idx").on(t.organizationId, t.date), tenantPolicy(t.organizationId)],
+  (t) => [
+    index("capacity_exceptions_org_date_idx").on(t.organizationId, t.date),
+    tenantPolicy(t.organizationId),
+  ],
 );
 
 export const pixSettings = pgTable(
@@ -147,7 +168,10 @@ export const whatsappInstances = pgTable(
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
-  (t) => [uniqueIndex("whatsapp_instances_name_idx").on(t.instanceName), tenantPolicy(t.organizationId)],
+  (t) => [
+    uniqueIndex("whatsapp_instances_name_idx").on(t.instanceName),
+    tenantPolicy(t.organizationId),
+  ],
 );
 
 export const SERVICE_CATEGORIES = ["banho", "tosa", "estetica", "saude", "outros"] as const;
@@ -185,7 +209,10 @@ export const servicePrices = pgTable(
     priceCents: integer("price_cents").notNull(),
     durationMinutes: integer("duration_minutes").notNull(),
   },
-  (t) => [uniqueIndex("service_prices_service_size_idx").on(t.serviceId, t.size), tenantPolicy(t.organizationId)],
+  (t) => [
+    uniqueIndex("service_prices_service_size_idx").on(t.serviceId, t.size),
+    tenantPolicy(t.organizationId),
+  ],
 );
 
 /** Assinatura do pet shop com a plataforma. Gravada pelo sistema a partir dos webhooks do Stripe. */
@@ -250,7 +277,9 @@ export const auditLogs = pgTable(
   "audit_logs",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    organizationId: text("organization_id").references(() => organization.id, { onDelete: "cascade" }),
+    organizationId: text("organization_id").references(() => organization.id, {
+      onDelete: "cascade",
+    }),
     actorUserId: text("actor_user_id").references(() => user.id, { onDelete: "set null" }),
     action: text("action").notNull(),
     entity: text("entity"),
@@ -258,7 +287,10 @@ export const auditLogs = pgTable(
     data: jsonb("data"),
     createdAt: createdAt(),
   },
-  (t) => [index("audit_logs_org_created_idx").on(t.organizationId, t.createdAt), tenantPolicy(t.organizationId)],
+  (t) => [
+    index("audit_logs_org_created_idx").on(t.organizationId, t.createdAt),
+    tenantPolicy(t.organizationId),
+  ],
 );
 
 /** Eventos recebidos de webhooks (Stripe, Evolution). A unicidade garante processamento único. */

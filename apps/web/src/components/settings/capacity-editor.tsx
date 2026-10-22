@@ -29,8 +29,12 @@ const ORDER: Weekday[] = [1, 2, 3, 4, 5, 6, 0];
 const DEFAULT_RANGE: Range = { start: "08:00", end: "18:00", slots: 2 };
 
 function fromRules(rules: CapacityRule[]): { interval: number; days: Record<Weekday, Day> } {
-  const days = Object.fromEntries(ORDER.map((d) => [d, { open: false, ranges: [] as Range[] }])) as Record<Weekday, Day>;
-  for (const rule of [...rules].sort((a, b) => (parseTime(a.start) ?? 0) - (parseTime(b.start) ?? 0))) {
+  const days = Object.fromEntries(
+    ORDER.map((d) => [d, { open: false, ranges: [] as Range[] }]),
+  ) as Record<Weekday, Day>;
+  for (const rule of [...rules].sort(
+    (a, b) => (parseTime(a.start) ?? 0) - (parseTime(b.start) ?? 0),
+  )) {
     days[rule.weekday].open = true;
     days[rule.weekday].ranges.push({ start: rule.start, end: rule.end, slots: rule.slots });
   }
@@ -40,28 +44,60 @@ function fromRules(rules: CapacityRule[]): { interval: number; days: Record<Week
 function toRules(days: Record<Weekday, Day>, interval: number): CapacityRule[] {
   return ORDER.flatMap((weekday) =>
     days[weekday].open
-      ? days[weekday].ranges.map((range) => ({ weekday, start: range.start, end: range.end, intervalMinutes: interval, slots: range.slots }))
+      ? days[weekday].ranges.map((range) => ({
+          weekday,
+          start: range.start,
+          end: range.end,
+          intervalMinutes: interval,
+          slots: range.slots,
+        }))
       : [],
   );
 }
 
-function SlotStepper({ value, onChange, label }: { value: number; onChange: (value: number) => void; label: string }) {
+function SlotStepper({
+  value,
+  onChange,
+  label,
+}: {
+  value: number;
+  onChange: (value: number) => void;
+  label: string;
+}) {
   return (
     <div className="flex items-center gap-1" role="group" aria-label={label}>
-      <Button variant="secondary" className="size-11 px-0" onClick={() => onChange(Math.max(1, value - 1))} aria-label="Menos uma vaga" disabled={value <= 1}>
+      <Button
+        variant="secondary"
+        className="size-11 px-0"
+        onClick={() => onChange(Math.max(1, value - 1))}
+        aria-label="Menos uma vaga"
+        disabled={value <= 1}
+      >
         <Minus className="size-4" aria-hidden />
       </Button>
       <span className="w-10 text-center text-lg font-medium tabular" aria-live="polite">
         {value}
       </span>
-      <Button variant="secondary" className="size-11 px-0" onClick={() => onChange(Math.min(50, value + 1))} aria-label="Mais uma vaga" disabled={value >= 50}>
+      <Button
+        variant="secondary"
+        className="size-11 px-0"
+        onClick={() => onChange(Math.min(50, value + 1))}
+        aria-label="Mais uma vaga"
+        disabled={value >= 50}
+      >
         <Plus className="size-4" aria-hidden />
       </Button>
     </div>
   );
 }
 
-export function CapacityEditor({ initialRules, wizard }: { initialRules: CapacityRule[]; wizard: boolean }) {
+export function CapacityEditor({
+  initialRules,
+  wizard,
+}: {
+  initialRules: CapacityRule[];
+  wizard: boolean;
+}) {
   const initial = useMemo(() => fromRules(initialRules), [initialRules]);
   const [interval, setIntervalMinutes] = useState<number>(initial.interval);
   const [days, setDays] = useState<Record<Weekday, Day>>(initial.days);
@@ -118,14 +154,21 @@ export function CapacityEditor({ initialRules, wizard }: { initialRules: Capacit
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Switch
                   checked={day.open}
-                  onChange={(open) => update(weekday, (d) => ({ open, ranges: open && d.ranges.length === 0 ? [{ ...DEFAULT_RANGE }] : d.ranges }))}
+                  onChange={(open) =>
+                    update(weekday, (d) => ({
+                      open,
+                      ranges: open && d.ranges.length === 0 ? [{ ...DEFAULT_RANGE }] : d.ranges,
+                    }))
+                  }
                   label={<span className="font-medium">{WEEKDAY_LABELS[weekday]}</span>}
                 />
                 {!day.open ? <span className="text-[15px] text-tinta-suave">Fechado</span> : null}
                 {day.open && (weekday === 1 || weekday === 6) ? (
                   <Button variant="ghost" size="sm" onClick={() => copyToOthers(weekday)}>
                     <Copy className="size-4" aria-hidden />
-                    {weekday === 1 ? "Repetir nos outros dias úteis abertos" : "Repetir no domingo, se aberto"}
+                    {weekday === 1
+                      ? "Repetir nos outros dias úteis abertos"
+                      : "Repetir no domingo, se aberto"}
                   </Button>
                 ) : null}
               </div>
@@ -142,7 +185,14 @@ export function CapacityEditor({ initialRules, wizard }: { initialRules: Capacit
                               type="time"
                               step={900}
                               value={range.start}
-                              onChange={(e) => update(weekday, (d) => ({ ...d, ranges: d.ranges.map((r, i) => (i === index ? { ...r, start: e.target.value } : r)) }))}
+                              onChange={(e) =>
+                                update(weekday, (d) => ({
+                                  ...d,
+                                  ranges: d.ranges.map((r, i) =>
+                                    i === index ? { ...r, start: e.target.value } : r,
+                                  ),
+                                }))
+                              }
                               className={cn(inputClasses, "w-[136px] tabular")}
                               aria-invalid={issue ? true : undefined}
                             />
@@ -153,7 +203,14 @@ export function CapacityEditor({ initialRules, wizard }: { initialRules: Capacit
                               type="time"
                               step={900}
                               value={range.end}
-                              onChange={(e) => update(weekday, (d) => ({ ...d, ranges: d.ranges.map((r, i) => (i === index ? { ...r, end: e.target.value } : r)) }))}
+                              onChange={(e) =>
+                                update(weekday, (d) => ({
+                                  ...d,
+                                  ranges: d.ranges.map((r, i) =>
+                                    i === index ? { ...r, end: e.target.value } : r,
+                                  ),
+                                }))
+                              }
                               className={cn(inputClasses, "w-[136px] tabular")}
                               aria-invalid={issue ? true : undefined}
                             />
@@ -163,7 +220,14 @@ export function CapacityEditor({ initialRules, wizard }: { initialRules: Capacit
                             <SlotStepper
                               label={`Vagas por horário, ${WEEKDAY_LABELS[weekday]}`}
                               value={range.slots}
-                              onChange={(slots) => update(weekday, (d) => ({ ...d, ranges: d.ranges.map((r, i) => (i === index ? { ...r, slots } : r)) }))}
+                              onChange={(slots) =>
+                                update(weekday, (d) => ({
+                                  ...d,
+                                  ranges: d.ranges.map((r, i) =>
+                                    i === index ? { ...r, slots } : r,
+                                  ),
+                                }))
+                              }
                             />
                           </div>
                           {day.ranges.length > 1 ? (
@@ -171,13 +235,20 @@ export function CapacityEditor({ initialRules, wizard }: { initialRules: Capacit
                               variant="ghost"
                               className="size-11 px-0"
                               aria-label="Remover esta faixa"
-                              onClick={() => update(weekday, (d) => ({ ...d, ranges: d.ranges.filter((_, i) => i !== index) }))}
+                              onClick={() =>
+                                update(weekday, (d) => ({
+                                  ...d,
+                                  ranges: d.ranges.filter((_, i) => i !== index),
+                                }))
+                              }
                             >
                               <Trash2 className="size-4" aria-hidden />
                             </Button>
                           ) : null}
                         </div>
-                        {issue ? <p className="text-sm font-medium text-alerta">{issue.message}</p> : null}
+                        {issue ? (
+                          <p className="text-sm font-medium text-alerta">{issue.message}</p>
+                        ) : null}
                       </div>
                     );
                   })
@@ -190,7 +261,13 @@ export function CapacityEditor({ initialRules, wizard }: { initialRules: Capacit
                     onClick={() =>
                       update(weekday, (d) => {
                         const last = d.ranges[d.ranges.length - 1];
-                        return { ...d, ranges: [...d.ranges, { start: last?.end ?? "13:00", end: "18:00", slots: last?.slots ?? 2 }] };
+                        return {
+                          ...d,
+                          ranges: [
+                            ...d.ranges,
+                            { start: last?.end ?? "13:00", end: "18:00", slots: last?.slots ?? 2 },
+                          ],
+                        };
                       })
                     }
                   >
@@ -212,15 +289,22 @@ export function CapacityEditor({ initialRules, wizard }: { initialRules: Capacit
         </div>
         <WeekGrid rules={rules} />
         <p className="text-sm text-tinta-suave">
-          Cada quadradinho é uma vaga. Um serviço que dura mais que um horário ocupa a vaga em todos os horários que ele cobre.
+          Cada quadradinho é uma vaga. Um serviço que dura mais que um horário ocupa a vaga em todos
+          os horários que ele cobre.
         </p>
       </section>
 
       <div>
-        <SubmitButton size="lg" pendingLabel="Salvando…" disabled={issues.length > 0 || rules.length === 0}>
+        <SubmitButton
+          size="lg"
+          pendingLabel="Salvando…"
+          disabled={issues.length > 0 || rules.length === 0}
+        >
           {wizard ? "Salvar e continuar" : "Salvar horários"}
         </SubmitButton>
-        {issues.length > 0 ? <p className="mt-2 text-sm text-alerta">Corrija os horários destacados para salvar.</p> : null}
+        {issues.length > 0 ? (
+          <p className="mt-2 text-sm text-alerta">Corrija os horários destacados para salvar.</p>
+        ) : null}
       </div>
     </ActionForm>
   );

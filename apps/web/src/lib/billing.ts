@@ -11,7 +11,10 @@ import { billing } from "./providers";
  * Grava a assinatura do pet shop a partir do provedor (RN-17: o status sempre vem do Stripe).
  * Guarda desde quando o pagamento está atrasado, para aplicar os prazos de RN-16.
  */
-export async function saveSubscription(organizationId: string, sub: BillingSubscription): Promise<void> {
+export async function saveSubscription(
+  organizationId: string,
+  sub: BillingSubscription,
+): Promise<void> {
   await withSystem(db(), async (tx) => {
     const existing = await tx.query.subscriptions.findFirst({
       where: eq(subscriptions.organizationId, organizationId),
@@ -33,7 +36,10 @@ export async function saveSubscription(organizationId: string, sub: BillingSubsc
       canceledAt: sub.canceledAt,
       pastDueSince: overdue ? (existing?.pastDueSince ?? new Date()) : null,
     };
-    await tx.insert(subscriptions).values(values).onConflictDoUpdate({ target: subscriptions.organizationId, set: values });
+    await tx
+      .insert(subscriptions)
+      .values(values)
+      .onConflictDoUpdate({ target: subscriptions.organizationId, set: values });
     if (existing?.status !== sub.status) {
       await audit(tx, { organizationId, userId: null }, "assinatura.status", {
         entity: "subscription",
@@ -80,12 +86,18 @@ export async function handleStripeWebhook(
   const fresh = await withSystem(db(), async (tx) => {
     const [inserted] = await tx
       .insert(webhookEvents)
-      .values({ source: "stripe", externalId: event.id, type: event.type, payload: event.payload as object })
+      .values({
+        source: "stripe",
+        externalId: event.id,
+        type: event.type,
+        payload: event.payload as object,
+      })
       .onConflictDoNothing()
       .returning({ id: webhookEvents.id });
     if (inserted) return true;
     const previous = await tx.query.webhookEvents.findFirst({
-      where: (t, { and, eq: equals }) => and(equals(t.source, "stripe"), equals(t.externalId, event.id)),
+      where: (t, { and, eq: equals }) =>
+        and(equals(t.source, "stripe"), equals(t.externalId, event.id)),
     });
     return !previous?.processedAt;
   });

@@ -32,7 +32,10 @@ export interface WhatsAppView {
   pairingCode: string | null;
 }
 
-export function toView(row: WhatsAppRow | null | undefined, extra: Partial<WhatsAppView> = {}): WhatsAppView {
+export function toView(
+  row: WhatsAppRow | null | undefined,
+  extra: Partial<WhatsAppView> = {},
+): WhatsAppView {
   return {
     status: row?.status ?? "disconnected",
     phoneNumber: row?.phoneNumber ?? null,
@@ -46,10 +49,14 @@ export function toView(row: WhatsAppRow | null | undefined, extra: Partial<Whats
   };
 }
 
-export async function getWhatsApp(ctx: Pick<ShopContext, "organization">): Promise<WhatsAppRow | null> {
+export async function getWhatsApp(
+  ctx: Pick<ShopContext, "organization">,
+): Promise<WhatsAppRow | null> {
   return (
     (await inShop(ctx, (tx) =>
-      tx.query.whatsappInstances.findFirst({ where: eq(whatsappInstances.organizationId, ctx.organization.id) }),
+      tx.query.whatsappInstances.findFirst({
+        where: eq(whatsappInstances.organizationId, ctx.organization.id),
+      }),
     )) ?? null
   );
 }
@@ -77,7 +84,9 @@ async function applyInfo(organizationId: string, info: InstanceInfo): Promise<Wh
         .returning();
       if (row.status !== "connected") {
         await completeStep(tx, organizationId, "whatsapp");
-        await audit(tx, { organizationId, userId: null }, "whatsapp.conectado", { data: { numero: info.phoneNumber } });
+        await audit(tx, { organizationId, userId: null }, "whatsapp.conectado", {
+          data: { numero: info.phoneNumber },
+        });
       }
       return updated ?? row;
     }
@@ -95,9 +104,14 @@ async function applyInfo(organizationId: string, info: InstanceInfo): Promise<Wh
 }
 
 /** Atualiza o estado a partir de um evento do webhook da Evolution. */
-export async function applyWebhookConnection(instanceName: string, info: InstanceInfo): Promise<void> {
+export async function applyWebhookConnection(
+  instanceName: string,
+  info: InstanceInfo,
+): Promise<void> {
   const row = await withSystem(db(), (tx) =>
-    tx.query.whatsappInstances.findFirst({ where: eq(whatsappInstances.instanceName, instanceName) }),
+    tx.query.whatsappInstances.findFirst({
+      where: eq(whatsappInstances.instanceName, instanceName),
+    }),
   );
   if (row) await applyInfo(row.organizationId, info);
 }
@@ -133,20 +147,32 @@ export async function startConnection(
       : await provider.connect(instanceName);
 
   if (result.state === "open") return refreshStatus(ctx, { refreshQr: false });
-  return toView(await getWhatsApp(ctx), { status: "connecting", qrCode: result.qrCode, pairingCode: result.pairingCode });
+  return toView(await getWhatsApp(ctx), {
+    status: "connecting",
+    qrCode: result.qrCode,
+    pairingCode: result.pairingCode,
+  });
 }
 
 /** Consulta o estado atual (usado pela tela enquanto espera a leitura do QR Code). */
-export async function refreshStatus(ctx: ShopContext, { refreshQr }: { refreshQr: boolean }): Promise<WhatsAppView> {
+export async function refreshStatus(
+  ctx: ShopContext,
+  { refreshQr }: { refreshQr: boolean },
+): Promise<WhatsAppView> {
   const row = await getWhatsApp(ctx);
   if (!row) return toView(null);
   const provider = messaging();
   const info = await provider.getInfo(row.instanceName);
   const updated = await applyInfo(ctx.organization.id, info);
-  if (info.state === "open" || row.status !== "connecting" || !refreshQr) return toView(updated ?? row);
+  if (info.state === "open" || row.status !== "connecting" || !refreshQr)
+    return toView(updated ?? row);
   const result = await provider.connect(row.instanceName);
   if (result.state === "open") return refreshStatus(ctx, { refreshQr: false });
-  return toView(updated ?? row, { status: "connecting", qrCode: result.qrCode, pairingCode: result.pairingCode });
+  return toView(updated ?? row, {
+    status: "connecting",
+    qrCode: result.qrCode,
+    pairingCode: result.pairingCode,
+  });
 }
 
 export async function disconnect(ctx: ShopContext): Promise<void> {
@@ -190,12 +216,15 @@ export async function sendShopMessage(
   const phone = normalizeBrPhone(to);
   if (!phone) return { ok: false, error: "Celular inválido." };
   const row = await getWhatsApp(ctx);
-  if (!row || row.status !== "connected") return { ok: false, error: "O WhatsApp do pet shop não está conectado." };
+  if (!row || row.status !== "connected")
+    return { ok: false, error: "O WhatsApp do pet shop não está conectado." };
 
   let providerMessageId: string | null = null;
   let error: string | null = null;
   try {
-    providerMessageId = (await messaging().sendText(row.instanceName, toWhatsAppNumber(phone), body)).id;
+    providerMessageId = (
+      await messaging().sendText(row.instanceName, toWhatsAppNumber(phone), body)
+    ).id;
   } catch (cause) {
     error = cause instanceof Error ? cause.message : String(cause);
   }
@@ -212,5 +241,10 @@ export async function sendShopMessage(
       createdBy: ctx.user?.id ?? null,
     }),
   );
-  return error ? { ok: false, error: "Não foi possível enviar a mensagem. Confira se o WhatsApp está conectado." } : { ok: true };
+  return error
+    ? {
+        ok: false,
+        error: "Não foi possível enviar a mensagem. Confira se o WhatsApp está conectado.",
+      }
+    : { ok: true };
 }

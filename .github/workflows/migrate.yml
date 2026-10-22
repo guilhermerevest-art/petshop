@@ -1,0 +1,28 @@
+name: Migrar banco de produção
+
+# Rodado à mão em Actions → "Migrar banco de produção" → Run workflow.
+# Precisa do secret DATABASE_URL_OWNER (conexão direta com o papel dono das tabelas).
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Digite "migrar" para confirmar'
+        required: true
+
+jobs:
+  migrate:
+    if: github.event.inputs.confirm == 'migrar'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --filter @petshop/db
+      - run: pnpm db:migrate
+        env:
+          DATABASE_URL_OWNER: ${{ secrets.DATABASE_URL_OWNER }}
+          DB_APP_ROLE: ${{ vars.DB_APP_ROLE || 'petshop_app' }}

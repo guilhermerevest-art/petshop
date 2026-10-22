@@ -76,7 +76,9 @@ export function ServicesManager({
 
   return (
     <div className="flex flex-col gap-6">
-      {services.length === 0 && canEdit ? <SuggestedPicker suggested={suggested} onCreateBlank={() => setEditing("new")} /> : null}
+      {services.length === 0 && canEdit ? (
+        <SuggestedPicker suggested={suggested} onCreateBlank={() => setEditing("new")} />
+      ) : null}
 
       {services.length > 0 ? (
         <>
@@ -130,20 +132,33 @@ function ServiceList({
       {description ? <p className="mt-1 text-[15px] text-tinta-suave">{description}</p> : null}
       <ul className="mt-3 overflow-hidden rounded-painel border border-rejunte bg-rejunte">
         {items.map((service) => (
-          <li key={service.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-white px-5 py-4 [&:not(:first-child)]:mt-px">
+          <li
+            key={service.id}
+            className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-white px-5 py-4 [&:not(:first-child)]:mt-px"
+          >
             <div className="min-w-0 flex-1">
               <p className="flex flex-wrap items-center gap-2 font-medium">
                 {service.name}
                 {!service.showInPortal ? <Badge>Fora do portal</Badge> : null}
               </p>
               <p className="text-[15px] text-tinta-suave tabular">
-                {range(service.prices.map((p) => p.priceCents), formatBRL)}
+                {range(
+                  service.prices.map((p) => p.priceCents),
+                  formatBRL,
+                )}
                 {service.prices.length ? ", " : ""}
-                {range(service.prices.map((p) => p.durationMinutes), formatDuration)}
+                {range(
+                  service.prices.map((p) => p.durationMinutes),
+                  formatDuration,
+                )}
               </p>
             </div>
             {onEdit ? (
-              <Button variant="ghost" onClick={() => onEdit(service)} aria-label={`Editar ${service.name}`}>
+              <Button
+                variant="ghost"
+                onClick={() => onEdit(service)}
+                aria-label={`Editar ${service.name}`}
+              >
                 <Pencil className="size-4" aria-hidden /> Editar
               </Button>
             ) : null}
@@ -154,7 +169,13 @@ function ServiceList({
   );
 }
 
-function SuggestedPicker({ suggested, onCreateBlank }: { suggested: SuggestedService[]; onCreateBlank: () => void }) {
+function SuggestedPicker({
+  suggested,
+  onCreateBlank,
+}: {
+  suggested: SuggestedService[];
+  onCreateBlank: () => void;
+}) {
   const [state, action] = useActionState(addSuggestedServicesAction, null);
   return (
     <Panel>
@@ -162,7 +183,8 @@ function SuggestedPicker({ suggested, onCreateBlank }: { suggested: SuggestedSer
         <PanelSection>
           <h2 className="text-lg">Comece pela lista sugerida</h2>
           <p className="mt-1 text-[15px] text-tinta-suave">
-            Marque o que vocês fazem. Os preços e tempos são sugestões: dá para ajustar cada um depois.
+            Marque o que vocês fazem. Os preços e tempos são sugestões: dá para ajustar cada um
+            depois.
           </p>
         </PanelSection>
         <PanelSection className="flex flex-col gap-3">
@@ -178,8 +200,15 @@ function SuggestedPicker({ suggested, onCreateBlank }: { suggested: SuggestedSer
                   <span className="font-medium">{service.name}</span>
                   {service.isAddon ? <span className="text-tinta-suave"> (adicional)</span> : null}
                   <span className="block text-sm text-tinta-suave tabular">
-                    {range(service.prices.map((p) => p.priceCents), formatBRL)},{" "}
-                    {range(service.prices.map((p) => p.durationMinutes), formatDuration)}
+                    {range(
+                      service.prices.map((p) => p.priceCents),
+                      formatBRL,
+                    )}
+                    ,{" "}
+                    {range(
+                      service.prices.map((p) => p.durationMinutes),
+                      formatDuration,
+                    )}
                   </span>
                 </span>
               }
@@ -232,10 +261,21 @@ function ServiceEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
-  const parsed = rows.map((row) => ({ size: row.size, priceCents: parseBRL(row.price), durationMinutes: row.durationMinutes }));
+  const parsed = rows.map((row) => ({
+    size: row.size,
+    priceCents: parseBRL(row.price),
+    durationMinutes: row.durationMinutes,
+  }));
   const complete = parsed.every((p) => p.priceCents !== null);
 
-  const copyFirst = () => setRows((current) => current.map((row) => ({ ...row, price: current[0]!.price, durationMinutes: current[0]!.durationMinutes })));
+  const copyFirst = () =>
+    setRows((current) =>
+      current.map((row) => ({
+        ...row,
+        price: current[0]!.price,
+        durationMinutes: current[0]!.durationMinutes,
+      })),
+    );
 
   return (
     <Dialog.Root open onOpenChange={(value) => (!value ? onClose() : undefined)}>
@@ -243,12 +283,19 @@ function ServiceEditor({
         <Dialog.Overlay className="fixed inset-0 z-40 bg-tinta/30" />
         <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 max-h-[92dvh] overflow-y-auto rounded-t-painel bg-white sm:inset-auto sm:top-1/2 sm:left-1/2 sm:w-[min(640px,94vw)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-painel">
           <div className="sticky top-0 z-10 flex items-center justify-between border-b border-rejunte bg-white px-5 py-4 sm:px-6">
-            <Dialog.Title className="text-xl font-[650]">{service ? `Editar ${service.name}` : "Novo serviço"}</Dialog.Title>
-            <Dialog.Close className="inline-flex size-11 items-center justify-center rounded-campo hover:bg-espuma" aria-label="Fechar">
+            <Dialog.Title className="text-xl font-[650]">
+              {service ? `Editar ${service.name}` : "Novo serviço"}
+            </Dialog.Title>
+            <Dialog.Close
+              className="inline-flex size-11 items-center justify-center rounded-campo hover:bg-espuma"
+              aria-label="Fechar"
+            >
               <X className="size-5" aria-hidden />
             </Dialog.Close>
           </div>
-          <Dialog.Description className="sr-only">Nome, tipo, preços e tempos por porte</Dialog.Description>
+          <Dialog.Description className="sr-only">
+            Nome, tipo, preços e tempos por porte
+          </Dialog.Description>
           <ActionForm action={action} className="flex flex-col gap-5 px-5 py-5 sm:px-6">
             <ActionFeedback state={state} />
             {service ? <input type="hidden" name="id" value={service.id} /> : null}
@@ -275,12 +322,31 @@ function ServiceEditor({
                 )}
               </Field>
             </div>
-            <Field label="Descrição" optional hint="O que está incluído. Aparece para o tutor no portal.">
-              {(props) => <Textarea {...props} name="description" defaultValue={service?.description ?? ""} rows={2} />}
+            <Field
+              label="Descrição"
+              optional
+              hint="O que está incluído. Aparece para o tutor no portal."
+            >
+              {(props) => (
+                <Textarea
+                  {...props}
+                  name="description"
+                  defaultValue={service?.description ?? ""}
+                  rows={2}
+                />
+              )}
             </Field>
             <div className="flex flex-col gap-3">
-              <Switch checked={isAddon} onChange={setIsAddon} label="É um adicional (feito junto com outro serviço)" />
-              <Switch checked={showInPortal} onChange={setShowInPortal} label="Tutor pode escolher no agendamento online" />
+              <Switch
+                checked={isAddon}
+                onChange={setIsAddon}
+                label="É um adicional (feito junto com outro serviço)"
+              />
+              <Switch
+                checked={showInPortal}
+                onChange={setShowInPortal}
+                label="Tutor pode escolher no agendamento online"
+              />
             </div>
 
             <fieldset className="flex flex-col gap-3">
@@ -291,10 +357,15 @@ function ServiceEditor({
                 </Button>
               </legend>
               {rows.map((row, index) => (
-                <div key={row.size} className="grid grid-cols-[minmax(0,1fr)_120px_120px] items-end gap-3">
+                <div
+                  key={row.size}
+                  className="grid grid-cols-[minmax(0,1fr)_120px_120px] items-end gap-3"
+                >
                   <div className="pb-3">
                     <p className="font-medium">{SIZE_LABELS[row.size]}</p>
-                    <p className="text-sm text-tinta-suave">{describeSizeRange(row.size, sizeRanges)}</p>
+                    <p className="text-sm text-tinta-suave">
+                      {describeSizeRange(row.size, sizeRanges)}
+                    </p>
                   </div>
                   <label className="flex flex-col gap-1">
                     <span className="text-sm text-tinta-suave">Preço (R$)</span>
@@ -302,9 +373,17 @@ function ServiceEditor({
                       inputMode="decimal"
                       value={row.price}
                       placeholder="0,00"
-                      onChange={(e) => setRows((current) => current.map((r, i) => (i === index ? { ...r, price: e.target.value } : r)))}
+                      onChange={(e) =>
+                        setRows((current) =>
+                          current.map((r, i) =>
+                            i === index ? { ...r, price: e.target.value } : r,
+                          ),
+                        )
+                      }
                       className={cn(inputClasses, "tabular")}
-                      aria-invalid={row.price !== "" && parseBRL(row.price) === null ? true : undefined}
+                      aria-invalid={
+                        row.price !== "" && parseBRL(row.price) === null ? true : undefined
+                      }
                     />
                   </label>
                   <label className="flex flex-col gap-1">
@@ -312,7 +391,11 @@ function ServiceEditor({
                     <select
                       value={row.durationMinutes}
                       onChange={(e) =>
-                        setRows((current) => current.map((r, i) => (i === index ? { ...r, durationMinutes: Number(e.target.value) } : r)))
+                        setRows((current) =>
+                          current.map((r, i) =>
+                            i === index ? { ...r, durationMinutes: Number(e.target.value) } : r,
+                          ),
+                        )
                       }
                       className={cn(inputClasses, "tabular")}
                     >
@@ -325,7 +408,9 @@ function ServiceEditor({
                   </label>
                 </div>
               ))}
-              {fieldError(state, "prices") ? <p className="text-sm font-medium text-alerta">{fieldError(state, "prices")}</p> : null}
+              {fieldError(state, "prices") ? (
+                <p className="text-sm font-medium text-alerta">{fieldError(state, "prices")}</p>
+              ) : null}
             </fieldset>
             <div className="border-t border-rejunte pt-5">
               <SubmitButton size="lg" pendingLabel="Salvando…" disabled={!complete}>
@@ -361,7 +446,10 @@ function RemoveService({ id, onDone }: { id: string; onDone: () => void }) {
   return (
     <ActionForm action={action} className="flex flex-col gap-3">
       <ActionFeedback state={state} />
-      <p className="text-[15px]">O serviço sai da lista e do agendamento online. O histórico de atendimentos continua guardado.</p>
+      <p className="text-[15px]">
+        O serviço sai da lista e do agendamento online. O histórico de atendimentos continua
+        guardado.
+      </p>
       <input type="hidden" name="id" value={id} />
       <div className="flex flex-wrap gap-2">
         <SubmitButton variant="danger" pendingLabel="Removendo…">
@@ -382,7 +470,8 @@ function SizeRangesForm({ ranges, canEdit }: { ranges: SizeRanges; canEdit: bool
       <summary className="cursor-pointer list-none px-5 py-4 font-medium [&::-webkit-details-marker]:hidden">
         Faixas de peso de cada porte
         <span className="block text-sm font-normal text-tinta-suave">
-          Pequeno até {ranges.P} kg, médio até {ranges.M} kg, grande até {ranges.G} kg, gigante acima disso.
+          Pequeno até {ranges.P} kg, médio até {ranges.M} kg, grande até {ranges.G} kg, gigante
+          acima disso.
         </span>
       </summary>
       <ActionForm action={action} className="flex flex-col gap-4 border-t border-rejunte px-5 py-4">
@@ -390,11 +479,21 @@ function SizeRangesForm({ ranges, canEdit }: { ranges: SizeRanges; canEdit: bool
         <div className="grid grid-cols-3 gap-3 sm:max-w-md">
           {(["P", "M", "G"] as const).map((size) => (
             <Field key={size} label={`${SIZE_LABELS[size]} até (kg)`}>
-              {(props) => <Input {...props} name={size} inputMode="decimal" defaultValue={String(ranges[size])} disabled={!canEdit} />}
+              {(props) => (
+                <Input
+                  {...props}
+                  name={size}
+                  inputMode="decimal"
+                  defaultValue={String(ranges[size])}
+                  disabled={!canEdit}
+                />
+              )}
             </Field>
           ))}
         </div>
-        <p className="text-sm text-tinta-suave">O porte do pet é sugerido pelo peso e pode ser ajustado na ficha dele.</p>
+        <p className="text-sm text-tinta-suave">
+          O porte do pet é sugerido pelo peso e pode ser ajustado na ficha dele.
+        </p>
         {canEdit ? (
           <div>
             <SubmitButton variant="secondary" pendingLabel="Salvando…">

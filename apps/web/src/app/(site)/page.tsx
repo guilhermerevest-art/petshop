@@ -69,14 +69,18 @@ export default async function LandingPage() {
     <main>
       <section className="mx-auto grid max-w-[1120px] items-center gap-12 px-4 pt-10 pb-20 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:pt-16">
         <div>
-          <h1 className="text-[38px] leading-[1.1] sm:text-[48px]">Agenda, WhatsApp e PIX do seu banho e tosa num lugar só</h1>
+          <h1 className="text-[38px] leading-[1.1] sm:text-[48px]">
+            Agenda, WhatsApp e PIX do seu banho e tosa num lugar só
+          </h1>
           <p className="mt-5 max-w-[52ch] text-lg text-tinta-suave">
-            Defina quantos pets você atende por horário, avise os tutores pelo WhatsApp do próprio pet shop e receba por PIX
-            direto na sua conta.
+            Defina quantos pets você atende por horário, avise os tutores pelo WhatsApp do próprio
+            pet shop e receba por PIX direto na sua conta.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/criar-conta" className={buttonClasses({ size: "lg" })}>
-              {plan && plan.trialDays > 0 ? `Testar grátis por ${plan.trialDays} dias` : "Criar conta"}
+              {plan && plan.trialDays > 0
+                ? `Testar grátis por ${plan.trialDays} dias`
+                : "Criar conta"}
             </Link>
             <Link href="/entrar" className={buttonClasses({ size: "lg", variant: "secondary" })}>
               Já tenho conta
@@ -92,11 +96,20 @@ export default async function LandingPage() {
           <ol className="mt-8 grid gap-8 md:grid-cols-3">
             {[
               ["Crie a conta", "Informe o nome do pet shop e ative o teste grátis."],
-              ["Configure o essencial", "Horários e vagas, serviços com preço por porte e a chave PIX. Uma lista sugerida adianta o trabalho."],
-              ["Conecte o WhatsApp", "Leia um QR Code com o celular do pet shop e mande uma mensagem de teste."],
+              [
+                "Configure o essencial",
+                "Horários e vagas, serviços com preço por porte e a chave PIX. Uma lista sugerida adianta o trabalho.",
+              ],
+              [
+                "Conecte o WhatsApp",
+                "Leia um QR Code com o celular do pet shop e mande uma mensagem de teste.",
+              ],
             ].map(([title, text], index) => (
               <li key={title} className="flex gap-4">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-azulejo bg-azulejo text-white tabular" aria-hidden>
+                <span
+                  className="flex size-9 shrink-0 items-center justify-center rounded-azulejo bg-azulejo text-white tabular"
+                  aria-hidden
+                >
                   {index + 1}
                 </span>
                 <span>
@@ -131,17 +144,26 @@ export default async function LandingPage() {
               Um plano, tudo incluído
             </h2>
             <p className="mt-2 max-w-[50ch] text-white/75">
-              Equipe sem limite de pessoas, WhatsApp do seu número e PIX sem taxa. Cancele quando quiser.
+              Equipe sem limite de pessoas, WhatsApp do seu número e PIX sem taxa. Cancele quando
+              quiser.
             </p>
           </div>
           <div className="flex flex-col items-start gap-4 md:items-end">
             {plan ? (
               <p>
-                <span className="text-[44px] font-[650] tabular">{formatBRL(plan.amountCents)}</span>{" "}
+                <span className="text-[44px] font-[650] tabular">
+                  {formatBRL(plan.amountCents)}
+                </span>{" "}
                 <span className="text-white/75">{formatInterval(plan.interval)}</span>
               </p>
             ) : null}
-            <Link href="/criar-conta" className={buttonClasses({ size: "lg", className: "bg-patinho text-tinta hover:bg-[#ffc94f]" })}>
+            <Link
+              href="/criar-conta"
+              className={buttonClasses({
+                size: "lg",
+                className: "bg-patinho text-tinta hover:bg-[#ffc94f]",
+              })}
+            >
               {plan && plan.trialDays > 0 ? "Começar teste grátis" : "Criar conta"}
             </Link>
           </div>
@@ -155,7 +177,9 @@ export default async function LandingPage() {
         <div className="mt-6 divide-y divide-rejunte border-y border-rejunte">
           {FAQ.map((item) => (
             <details key={item.q} className="group py-4">
-              <summary className="cursor-pointer list-none text-lg font-medium [&::-webkit-details-marker]:hidden">{item.q}</summary>
+              <summary className="cursor-pointer list-none text-lg font-medium [&::-webkit-details-marker]:hidden">
+                {item.q}
+              </summary>
               <p className="mt-2 text-tinta-suave">{item.a}</p>
             </details>
           ))}

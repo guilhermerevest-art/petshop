@@ -58,10 +58,16 @@ export function TeamManager({
         </h2>
         <ul className="mt-3 overflow-hidden rounded-painel border border-rejunte bg-rejunte">
           {members.map((member) => (
-            <li key={member.id} className="flex flex-wrap items-center gap-x-4 gap-y-3 bg-white px-5 py-4 [&:not(:first-child)]:mt-px">
+            <li
+              key={member.id}
+              className="flex flex-wrap items-center gap-x-4 gap-y-3 bg-white px-5 py-4 [&:not(:first-child)]:mt-px"
+            >
               <div className="min-w-0 flex-1">
                 <p className="font-medium">
-                  {member.name} {member.isYou ? <span className="font-normal text-tinta-suave">(você)</span> : null}
+                  {member.name}{" "}
+                  {member.isYou ? (
+                    <span className="font-normal text-tinta-suave">(você)</span>
+                  ) : null}
                 </p>
                 <p className="truncate text-[15px] text-tinta-suave">
                   {member.email}
@@ -71,7 +77,9 @@ export function TeamManager({
               {canManage && member.role !== "owner" && !member.isYou ? (
                 <MemberControls member={member} />
               ) : (
-                <Badge tone={member.role === "owner" ? "ok" : "neutral"}>{ROLE_LABELS[member.role]}</Badge>
+                <Badge tone={member.role === "owner" ? "ok" : "neutral"}>
+                  {ROLE_LABELS[member.role]}
+                </Badge>
               )}
             </li>
           ))}
@@ -84,7 +92,10 @@ export function TeamManager({
           </h2>
           <ul className="mt-3 overflow-hidden rounded-painel border border-rejunte bg-rejunte">
             {invitations.map((invitation) => (
-              <li key={invitation.id} className="flex flex-wrap items-center gap-x-4 gap-y-3 bg-white px-5 py-4 [&:not(:first-child)]:mt-px">
+              <li
+                key={invitation.id}
+                className="flex flex-wrap items-center gap-x-4 gap-y-3 bg-white px-5 py-4 [&:not(:first-child)]:mt-px"
+              >
                 <div className="min-w-0 flex-1">
                   <p className="font-medium">{invitation.email}</p>
                   <p className="text-[15px] text-tinta-suave">{ROLE_LABELS[invitation.role]}</p>
@@ -92,7 +103,13 @@ export function TeamManager({
                 <div className="flex flex-wrap gap-2">
                   <CopyButton value={invitation.link} label="Copiar link do convite" size="sm" />
                   {canManage ? (
-                    <ActionButton action={cancelInvitationAction} hidden={{ invitationId: invitation.id }} variant="ghost" size="sm" pendingLabel="Cancelando…">
+                    <ActionButton
+                      action={cancelInvitationAction}
+                      hidden={{ invitationId: invitation.id }}
+                      variant="ghost"
+                      size="sm"
+                      pendingLabel="Cancelando…"
+                    >
                       Cancelar convite
                     </ActionButton>
                   ) : null}
@@ -117,25 +134,50 @@ function InviteForm({ whatsappConnected }: { whatsappConnected: boolean }) {
           <h2 className="text-lg">Convidar uma pessoa</h2>
           <ActionFeedback state={state} />
           {state?.ok && state.data ? (
-            <Notice tone="success" title={state.data.sentByWhatsApp ? "Convite enviado pelo WhatsApp." : "Convite criado."}>
+            <Notice
+              tone="success"
+              title={
+                state.data.sentByWhatsApp ? "Convite enviado pelo WhatsApp." : "Convite criado."
+              }
+            >
               <p>Você também pode mandar o link direto para a pessoa:</p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <code className="rounded-md bg-white px-2 py-1 text-sm break-all">{state.data.link}</code>
+                <code className="rounded-md bg-white px-2 py-1 text-sm break-all">
+                  {state.data.link}
+                </code>
                 <CopyButton value={state.data.link} size="sm" />
               </div>
             </Notice>
           ) : null}
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="E-mail da pessoa" error={fieldError(state, "email")} hint="Ela usa este e-mail para entrar.">
-              {(props) => <Input {...props} name="email" type="email" autoComplete="off" required />}
+            <Field
+              label="E-mail da pessoa"
+              error={fieldError(state, "email")}
+              hint="Ela usa este e-mail para entrar."
+            >
+              {(props) => (
+                <Input {...props} name="email" type="email" autoComplete="off" required />
+              )}
             </Field>
             <Field
               label="Celular com WhatsApp"
               optional
               error={fieldError(state, "phone")}
-              hint={whatsappConnected ? "Enviamos o convite pelo WhatsApp do pet shop." : "Conecte o WhatsApp para enviar o convite por lá."}
+              hint={
+                whatsappConnected
+                  ? "Enviamos o convite pelo WhatsApp do pet shop."
+                  : "Conecte o WhatsApp para enviar o convite por lá."
+              }
             >
-              {(props) => <Input {...props} name="phone" type="tel" inputMode="tel" placeholder="(19) 98765-4321" />}
+              {(props) => (
+                <Input
+                  {...props}
+                  name="phone"
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="(19) 98765-4321"
+                />
+              )}
             </Field>
           </div>
           <ChoiceCards
@@ -144,7 +186,11 @@ function InviteForm({ whatsappConnected }: { whatsappConnected: boolean }) {
             columns={3}
             value={role}
             onChange={setRole}
-            options={INVITABLE_ROLES.map((value) => ({ value, label: ROLE_LABELS[value], description: ROLE_DESCRIPTIONS[value] }))}
+            options={INVITABLE_ROLES.map((value) => ({
+              value,
+              label: ROLE_LABELS[value],
+              description: ROLE_DESCRIPTIONS[value],
+            }))}
           />
         </PanelSection>
         <PanelSection>
@@ -186,7 +232,13 @@ function MemberControls({ member }: { member: MemberItem }) {
           Remover
         </summary>
         <div className="mt-2">
-          <ActionButton action={removeMemberAction} hidden={{ memberId: member.id }} variant="danger" size="sm" pendingLabel="Removendo…">
+          <ActionButton
+            action={removeMemberAction}
+            hidden={{ memberId: member.id }}
+            variant="danger"
+            size="sm"
+            pendingLabel="Removendo…"
+          >
             Remover {member.name.split(" ")[0]} da equipe
           </ActionButton>
         </div>

@@ -1,5 +1,10 @@
 import { createAccessControl } from "better-auth/plugins/access";
-import { defaultStatements, adminAc, ownerAc, memberAc } from "better-auth/plugins/organization/access";
+import {
+  defaultStatements,
+  adminAc,
+  ownerAc,
+  memberAc,
+} from "better-auth/plugins/organization/access";
 
 export const ROLES = ["owner", "manager", "reception", "groomer"] as const;
 export type Role = (typeof ROLES)[number];

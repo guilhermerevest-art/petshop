@@ -57,7 +57,10 @@ export async function simulateCheckoutAction(_: ActionResult | null): Promise<Ac
   if (!provider) return fail("Disponível só no modo de teste.");
   const ctx = await shopForAction("billing.manage", { write: false });
   if ("error" in ctx) return fail(ctx.error);
-  await saveSubscription(ctx.organization.id, await provider.simulateSubscription(ctx.organization.id));
+  await saveSubscription(
+    ctx.organization.id,
+    await provider.simulateSubscription(ctx.organization.id),
+  );
   redirect("/app/configurar");
 }
 
@@ -76,10 +79,23 @@ export async function simulateStatusAction(formData: FormData): Promise<void> {
         : scenario === "atrasado-31"
           ? { status: "past_due", pastDueSince: daysAgo(31) }
           : scenario === "cancelada"
-            ? { status: "canceled", currentPeriodEnd: daysAgo(1), canceledAt: daysAgo(1), pastDueSince: null }
-            : { status: "active", pastDueSince: null, canceledAt: null, currentPeriodEnd: new Date(Date.now() + 30 * 86_400_000) };
+            ? {
+                status: "canceled",
+                currentPeriodEnd: daysAgo(1),
+                canceledAt: daysAgo(1),
+                pastDueSince: null,
+              }
+            : {
+                status: "active",
+                pastDueSince: null,
+                canceledAt: null,
+                currentPeriodEnd: new Date(Date.now() + 30 * 86_400_000),
+              };
   await withSystem(db(), (tx) =>
-    tx.update(subscriptions).set(changes).where(eq(subscriptions.organizationId, ctx.organization.id)),
+    tx
+      .update(subscriptions)
+      .set(changes)
+      .where(eq(subscriptions.organizationId, ctx.organization.id)),
   );
   redirect("/app/assinatura/simulada");
 }

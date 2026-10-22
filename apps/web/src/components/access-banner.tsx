@@ -14,7 +14,10 @@ export function AccessBanner({ access, canBilling }: { access: Access; canBillin
       <div className="mx-auto flex max-w-[1040px] flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <p className="text-[15px]">{text}</p>
         {canBilling ? (
-          <Link href="/app/assinatura" className="shrink-0 font-medium text-tinta underline underline-offset-2">
+          <Link
+            href="/app/assinatura"
+            className="shrink-0 font-medium text-tinta underline underline-offset-2"
+          >
             Regularizar pagamento
           </Link>
         ) : (

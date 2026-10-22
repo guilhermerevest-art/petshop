@@ -27,7 +27,13 @@ export interface NavProps {
   footer: React.ReactNode;
 }
 
-function NavItems({ showSetup, setupProgress, canBilling, isPlatformAdmin, onNavigate }: NavProps & { onNavigate?: () => void }) {
+function NavItems({
+  showSetup,
+  setupProgress,
+  canBilling,
+  isPlatformAdmin,
+  onNavigate,
+}: NavProps & { onNavigate?: () => void }) {
   return (
     <nav aria-label="Menu principal" className="flex flex-col gap-1">
       <NavLink href="/app" exact icon={<House />} onNavigate={onNavigate}>
@@ -108,7 +114,10 @@ export function MobileNav(props: NavProps) {
           <Dialog.Content className="fixed inset-y-0 right-0 z-50 flex w-[min(320px,88vw)] flex-col bg-white px-3 py-4 shadow-xl">
             <div className="flex items-center justify-between px-3 pb-4">
               <Dialog.Title className="text-lg font-[650]">Menu</Dialog.Title>
-              <Dialog.Close className="inline-flex size-11 items-center justify-center rounded-campo hover:bg-espuma" aria-label="Fechar menu">
+              <Dialog.Close
+                className="inline-flex size-11 items-center justify-center rounded-campo hover:bg-espuma"
+                aria-label="Fechar menu"
+              >
                 <X className="size-5" aria-hidden />
               </Dialog.Close>
             </div>

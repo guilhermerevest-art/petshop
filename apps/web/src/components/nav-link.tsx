@@ -30,7 +30,10 @@ export function NavLink({
         active ? "bg-azulejo-claro font-medium text-azulejo-escuro" : "text-tinta hover:bg-espuma",
       )}
     >
-      <span className={cn("[&>svg]:size-5", active ? "text-azulejo" : "text-tinta-suave")} aria-hidden>
+      <span
+        className={cn("[&>svg]:size-5", active ? "text-azulejo" : "text-tinta-suave")}
+        aria-hidden
+      >
         {icon}
       </span>
       {children}

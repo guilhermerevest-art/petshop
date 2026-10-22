@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { and, asc, eq } from "drizzle-orm";
 import { accessFor, type Access, type SubscriptionStatus } from "@petshop/core";
 import {
+  checkDatabaseRole,
   member,
   organization,
   session as sessionTable,
@@ -35,7 +36,11 @@ export interface ShopContext {
 }
 
 /** Sessão do usuário (memorizada por requisição). */
-export const getSession = cache(async () => auth().api.getSession({ headers: await headers() }));
+export const getSession = cache(async () => {
+  // Lê os cabeçalhos antes de criar a autenticação: assim o Next sabe que a página é dinâmica.
+  const requestHeaders = await headers();
+  return auth().api.getSession({ headers: requestHeaders });
+});
 
 export async function requireUser(next?: string) {
   const session = await getSession();
@@ -45,8 +50,24 @@ export async function requireUser(next?: string) {
 
 type LoadResult = ShopContext | "no-session" | "no-shop";
 
+let roleChecked: Promise<void> | null = null;
+
+/** Recusa operar se a conexão do banco ignora o RLS (superusuário ou BYPASSRLS). Conferido uma vez por processo. */
+function assertSafeDatabaseRole(): Promise<void> {
+  roleChecked ??= checkDatabaseRole(db()).then((check) => {
+    if (check.bypassesRls) {
+      roleChecked = null;
+      throw new Error(
+        `O usuário do banco "${check.role}" ignora o RLS. Configure DATABASE_URL com o papel da aplicação (docs/infra.md).`,
+      );
+    }
+  });
+  return roleChecked;
+}
+
 /** Carrega o pet shop ativo da sessão, com papel, perfil e assinatura. */
 export const loadShopContext = cache(async (): Promise<LoadResult> => {
+  await assertSafeDatabaseRole();
   const session = await getSession();
   if (!session) return "no-session";
   const userId = session.user.id;
@@ -72,17 +93,25 @@ export const loadShopContext = cache(async (): Promise<LoadResult> => {
       .where(eq(sessionTable.token, session.session.token));
   }
 
-  const org = await db().query.organization.findFirst({ where: eq(organization.id, membership.organizationId) });
+  const org = await db().query.organization.findFirst({
+    where: eq(organization.id, membership.organizationId),
+  });
   if (!org) return "no-shop";
 
   const { profile, subscription } = await withTenant(db(), org.id, async (tx) => {
-    let profile = await tx.query.shopProfiles.findFirst({ where: eq(shopProfiles.organizationId, org.id) });
+    let profile = await tx.query.shopProfiles.findFirst({
+      where: eq(shopProfiles.organizationId, org.id),
+    });
     if (!profile) {
       await tx.insert(shopProfiles).values({ organizationId: org.id }).onConflictDoNothing();
-      profile = await tx.query.shopProfiles.findFirst({ where: eq(shopProfiles.organizationId, org.id) });
+      profile = await tx.query.shopProfiles.findFirst({
+        where: eq(shopProfiles.organizationId, org.id),
+      });
     }
     const subscription =
-      (await tx.query.subscriptions.findFirst({ where: eq(subscriptions.organizationId, org.id) })) ?? null;
+      (await tx.query.subscriptions.findFirst({
+        where: eq(subscriptions.organizationId, org.id),
+      })) ?? null;
     return { profile: profile!, subscription };
   });
 
@@ -121,10 +150,12 @@ interface RequireShopOptions {
 /** Para páginas: garante sessão, pet shop, assinatura e permissão, redirecionando quando faltar algo. */
 export async function requireShop(options: RequireShopOptions = {}): Promise<ShopContext> {
   const ctx = await loadShopContext();
-  if (ctx === "no-session") redirect(options.next ? `/entrar?next=${encodeURIComponent(options.next)}` : "/entrar");
+  if (ctx === "no-session")
+    redirect(options.next ? `/entrar?next=${encodeURIComponent(options.next)}` : "/entrar");
   if (ctx === "no-shop") redirect("/app/novo-pet-shop");
   if (!options.allowWithoutAccess && !ctx.access.canUseApp) redirect("/app/assinatura");
-  if (options.capability && !can(ctx.role, options.capability)) redirect("/app?aviso=sem-permissao");
+  if (options.capability && !can(ctx.role, options.capability))
+    redirect("/app?aviso=sem-permissao");
   return ctx;
 }
 
@@ -154,6 +185,9 @@ export async function shopForAction(
 }
 
 /** Executa no contexto do pet shop (RLS). */
-export function inShop<T>(ctx: Pick<ShopContext, "organization">, fn: (tx: Transaction) => Promise<T>): Promise<T> {
+export function inShop<T>(
+  ctx: Pick<ShopContext, "organization">,
+  fn: (tx: Transaction) => Promise<T>,
+): Promise<T> {
   return withTenant(db(), ctx.organization.id, fn);
 }

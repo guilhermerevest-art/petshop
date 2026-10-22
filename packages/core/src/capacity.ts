@@ -60,11 +60,17 @@ export function validateCapacityRules(rules: CapacityRule[]): RuleIssue[] {
       .map((rule, index) => ({ rule, index }))
       .filter(({ rule }) => rule.weekday === weekday)
       .map(({ rule, index }) => ({ index, start: parseTime(rule.start), end: parseTime(rule.end) }))
-      .filter((r): r is { index: number; start: number; end: number } => r.start !== null && r.end !== null)
+      .filter(
+        (r): r is { index: number; start: number; end: number } =>
+          r.start !== null && r.end !== null,
+      )
       .sort((a, b) => a.start - b.start);
     for (let i = 1; i < sameDay.length; i++) {
       if (sameDay[i]!.start < sameDay[i - 1]!.end) {
-        issues.push({ index: sameDay[i]!.index, message: "Esta faixa se sobrepõe a outra do mesmo dia" });
+        issues.push({
+          index: sameDay[i]!.index,
+          message: "Esta faixa se sobrepõe a outra do mesmo dia",
+        });
       }
     }
   }
@@ -115,7 +121,11 @@ export function occupancy(slots: Slot[], bookings: Booking[]): number[] {
  * Horários de início em que um atendimento com essa duração cabe:
  * todos os minutos precisam estar dentro da grade e todos os horários cobertos precisam ter vaga.
  */
-export function availableStarts(slots: Slot[], bookings: Booking[], durationMinutes: number): number[] {
+export function availableStarts(
+  slots: Slot[],
+  bookings: Booking[],
+  durationMinutes: number,
+): number[] {
   const used = occupancy(slots, bookings);
   const result: number[] = [];
   for (let i = 0; i < slots.length; i++) {

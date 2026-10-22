@@ -11,7 +11,10 @@ export async function snap(page: Page, name: string) {
   await page.screenshot({ path: `${dir}/${name}.png`, fullPage: true });
 }
 
-export async function signUp(page: Page, data: { shop: string; name: string; email: string; password?: string }) {
+export async function signUp(
+  page: Page,
+  data: { shop: string; name: string; email: string; password?: string },
+) {
   await page.goto("/criar-conta");
   await page.getByLabel("Nome do pet shop").fill(data.shop);
   await page.getByLabel("Seu nome").fill(data.name);

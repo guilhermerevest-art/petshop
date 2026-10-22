@@ -26,7 +26,10 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       <div className="min-w-0 flex-1">
         <MobileNav {...nav} />
         <AccessBanner access={ctx.access} canBilling={canBilling} />
-        <main id="conteudo" className="mx-auto w-full max-w-[1040px] px-4 pt-6 pb-16 sm:px-8 sm:pt-10">
+        <main
+          id="conteudo"
+          className="mx-auto w-full max-w-[1040px] px-4 pt-6 pb-16 sm:px-8 sm:pt-10"
+        >
           {children}
         </main>
       </div>

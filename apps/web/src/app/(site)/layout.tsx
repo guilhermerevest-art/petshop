@@ -13,7 +13,10 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           <Link href="/entrar" className={buttonClasses({ variant: "ghost" })}>
             Entrar
           </Link>
-          <Link href="/criar-conta" className={buttonClasses({ className: "hidden sm:inline-flex" })}>
+          <Link
+            href="/criar-conta"
+            className={buttonClasses({ className: "hidden sm:inline-flex" })}
+          >
             Criar conta
           </Link>
         </nav>

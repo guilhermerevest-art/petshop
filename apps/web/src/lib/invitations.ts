@@ -34,7 +34,9 @@ export async function getInvitation(id: string): Promise<InvitationView | null> 
     .where(eq(invitation.id, id))
     .limit(1);
   if (!row) return null;
-  const existing = await db().query.user.findFirst({ where: eq(user.email, row.email.toLowerCase()) });
+  const existing = await db().query.user.findFirst({
+    where: eq(user.email, row.email.toLowerCase()),
+  });
   const state =
     row.status === "accepted"
       ? "accepted"

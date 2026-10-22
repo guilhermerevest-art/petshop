@@ -1,0 +1,28 @@
+# Serviços para desenvolvimento local: docker compose -f docker-compose.dev.yml up -d
+# Depois: PGHOST=localhost PGUSER=postgres PGPASSWORD=postgres ./scripts/dev-db.sh && pnpm db:migrate
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports: ["5432:5432"]
+    volumes: [postgres:/var/lib/postgresql/data]
+
+  # Opcional: Evolution API local para testar com um WhatsApp de verdade.
+  # Configure EVOLUTION_API_URL=http://localhost:8081 e EVOLUTION_API_KEY=dev-evolution-key.
+  evolution:
+    image: evoapicloud/evolution-api:v2.3.7
+    profiles: [whatsapp]
+    environment:
+      AUTHENTICATION_API_KEY: dev-evolution-key
+      DATABASE_ENABLED: "true"
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgres://postgres:postgres@postgres:5432/evolution
+      CACHE_REDIS_ENABLED: "false"
+      CACHE_LOCAL_ENABLED: "true"
+      CONFIG_SESSION_PHONE_CLIENT: PetShop
+    ports: ["8081:8080"]
+    depends_on: [postgres]
+
+volumes:
+  postgres:

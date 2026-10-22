@@ -19,7 +19,10 @@ const phone = z
   .transform((value, ctx) => {
     const normalized = normalizeBrPhone(value);
     if (!normalized) {
-      ctx.addIssue({ code: "custom", message: "Digite o celular com DDD, por exemplo (19) 98765-4321." });
+      ctx.addIssue({
+        code: "custom",
+        message: "Digite o celular com DDD, por exemplo (19) 98765-4321.",
+      });
       return z.NEVER;
     }
     return normalized;
@@ -35,16 +38,25 @@ async function availableSlug(name: string): Promise<string> {
   const base = slugify(name) || "pet-shop";
   for (let attempt = 1; attempt < 50; attempt++) {
     const candidate = attempt === 1 ? base : `${base.slice(0, 36)}-${attempt}`;
-    const taken = await db().query.organization.findFirst({ where: eq(organization.slug, candidate) });
+    const taken = await db().query.organization.findFirst({
+      where: eq(organization.slug, candidate),
+    });
     if (!taken && !["admin", "api", "app", "www"].includes(candidate)) return candidate;
   }
   return `${base.slice(0, 30)}-${Date.now().toString(36)}`;
 }
 
 /** Cria o pet shop e o perfil inicial em nome do usuário da sessão informada. */
-async function createShop(sessionHeaders: Headers, shopName: string, contact: { phone: string | null; email: string }) {
+async function createShop(
+  sessionHeaders: Headers,
+  shopName: string,
+  contact: { phone: string | null; email: string },
+) {
   const slug = await availableSlug(shopName);
-  const created = await auth().api.createOrganization({ body: { name: shopName, slug }, headers: sessionHeaders });
+  const created = await auth().api.createOrganization({
+    body: { name: shopName, slug },
+    headers: sessionHeaders,
+  });
   if (!created) throw new Error("Não foi possível criar o pet shop");
   await withTenant(db(), created.id, (tx) =>
     tx
@@ -64,9 +76,13 @@ const signUpSchema = z.object({
   terms: z.literal("on", { error: "Para continuar, aceite os termos de uso." }),
 });
 
-export async function signUpAction(_: ActionResult | null, formData: FormData): Promise<ActionResult> {
+export async function signUpAction(
+  _: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
   const parsed = signUpSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
+  if (!parsed.success)
+    return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
   const data = parsed.data;
 
   try {
@@ -75,7 +91,10 @@ export async function signUpAction(_: ActionResult | null, formData: FormData): 
       headers: await headers(),
       returnHeaders: true,
     });
-    await createShop(cookieHeaderFrom(responseHeaders), data.shopName, { phone: data.phone, email: data.email });
+    await createShop(cookieHeaderFrom(responseHeaders), data.shopName, {
+      phone: data.phone,
+      email: data.email,
+    });
   } catch (error) {
     if (authErrorCode(error)?.startsWith("USER_ALREADY_EXISTS")) {
       return fail(authErrorMessage(error), { email: "Este e-mail já tem conta." });
@@ -88,9 +107,13 @@ export async function signUpAction(_: ActionResult | null, formData: FormData): 
 
 const signInSchema = z.object({ email, password: z.string().min(1, "Digite sua senha.") });
 
-export async function signInAction(_: ActionResult | null, formData: FormData): Promise<ActionResult> {
+export async function signInAction(
+  _: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
   const parsed = signInSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
+  if (!parsed.success)
+    return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
   try {
     await auth().api.signInEmail({ body: parsed.data, headers: await headers() });
   } catch (error) {
@@ -104,43 +127,64 @@ export async function signOutAction(): Promise<void> {
   redirect("/entrar");
 }
 
-export async function requestPasswordResetAction(_: ActionResult | null, formData: FormData): Promise<ActionResult> {
+export async function requestPasswordResetAction(
+  _: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
   const parsed = z.object({ email }).safeParse(Object.fromEntries(formData));
   if (!parsed.success) return fail("Confira o e-mail.", zodFieldErrors(parsed.error.issues));
   try {
-    await auth().api.requestPasswordReset({ body: { email: parsed.data.email, redirectTo: "/redefinir-senha" } });
+    await auth().api.requestPasswordReset({
+      body: { email: parsed.data.email, redirectTo: "/redefinir-senha" },
+    });
   } catch (error) {
     console.error("requestPasswordReset", error);
   }
   // Mesma resposta exista ou não a conta, para não revelar quem é cliente.
-  return ok("Se houver uma conta com este e-mail, você vai receber um link para criar uma nova senha.");
+  return ok(
+    "Se houver uma conta com este e-mail, você vai receber um link para criar uma nova senha.",
+  );
 }
 
-export async function resetPasswordAction(_: ActionResult | null, formData: FormData): Promise<ActionResult> {
+export async function resetPasswordAction(
+  _: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
   const parsed = z
     .object({ token: z.string().min(1), password })
     .safeParse(Object.fromEntries(formData));
   if (!parsed.success) return fail("Confira a senha.", zodFieldErrors(parsed.error.issues));
   try {
-    await auth().api.resetPassword({ body: { token: parsed.data.token, newPassword: parsed.data.password } });
+    await auth().api.resetPassword({
+      body: { token: parsed.data.token, newPassword: parsed.data.password },
+    });
   } catch (error) {
     return fail(authErrorMessage(error));
   }
   redirect("/entrar?senha=alterada");
 }
 
-const newShopSchema = z.object({ shopName: z.string().trim().min(2, "Digite o nome do pet shop.").max(80) });
+const newShopSchema = z.object({
+  shopName: z.string().trim().min(2, "Digite o nome do pet shop.").max(80),
+});
 
 /** Para quem já tem conta e quer abrir outro pet shop (ou entrou sem nenhum). */
-export async function createShopAction(_: ActionResult | null, formData: FormData): Promise<ActionResult> {
+export async function createShopAction(
+  _: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
   const parsed = newShopSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
+  if (!parsed.success)
+    return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
   const requestHeaders = await headers();
   const session = await auth().api.getSession({ headers: requestHeaders });
   if (!session) redirect("/entrar");
   const user = session.user as typeof session.user & { phone?: string | null };
   try {
-    await createShop(requestHeaders, parsed.data.shopName, { phone: user.phone ?? null, email: user.email });
+    await createShop(requestHeaders, parsed.data.shopName, {
+      phone: user.phone ?? null,
+      email: user.email,
+    });
   } catch (error) {
     console.error("createShopAction", error);
     return fail(authErrorMessage(error));

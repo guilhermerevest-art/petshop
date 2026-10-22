@@ -5,7 +5,13 @@ import { cn } from "@/lib/cn";
 import { STEPS } from "@/lib/onboarding";
 
 /** Lista de etapas do assistente: é uma sequência de verdade, por isso tem números. */
-export function WizardSteps({ current, done }: { current: OnboardingStep | null; done: Partial<Record<OnboardingStep, string>> }) {
+export function WizardSteps({
+  current,
+  done,
+}: {
+  current: OnboardingStep | null;
+  done: Partial<Record<OnboardingStep, string>>;
+}) {
   return (
     <nav aria-label="Etapas da configuração">
       <ol className="flex flex-col gap-1">
@@ -25,7 +31,11 @@ export function WizardSteps({ current, done }: { current: OnboardingStep | null;
                 <span
                   className={cn(
                     "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-azulejo text-sm font-medium tabular",
-                    isDone ? "bg-azulejo text-white" : isCurrent ? "bg-patinho text-tinta" : "bg-rejunte text-tinta-suave",
+                    isDone
+                      ? "bg-azulejo text-white"
+                      : isCurrent
+                        ? "bg-patinho text-tinta"
+                        : "bg-rejunte text-tinta-suave",
                   )}
                   aria-hidden
                 >
@@ -36,7 +46,9 @@ export function WizardSteps({ current, done }: { current: OnboardingStep | null;
                     {step.title}
                     {step.optional ? <span className="text-tinta-suave"> (opcional)</span> : null}
                   </span>
-                  <span className="sr-only">{isDone ? ", concluída" : isCurrent ? ", etapa atual" : ""}</span>
+                  <span className="sr-only">
+                    {isDone ? ", concluída" : isCurrent ? ", etapa atual" : ""}
+                  </span>
                 </span>
               </Link>
             </li>

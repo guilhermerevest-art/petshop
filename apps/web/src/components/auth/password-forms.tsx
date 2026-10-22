@@ -18,7 +18,9 @@ export function ForgotPasswordForm() {
       <Field label="E-mail da conta" error={fieldError(state, "email")}>
         {(props) => <Input {...props} name="email" type="email" autoComplete="email" required />}
       </Field>
-      <SubmitButton size="lg" pendingLabel="Enviando…">Enviar link</SubmitButton>
+      <SubmitButton size="lg" pendingLabel="Enviando…">
+        Enviar link
+      </SubmitButton>
     </ActionForm>
   );
 }
@@ -29,10 +31,25 @@ export function ResetPasswordForm({ token }: { token: string }) {
     <ActionForm action={action} className="flex flex-col gap-5" noValidate>
       <ActionFeedback state={state} />
       <input type="hidden" name="token" value={token} />
-      <Field label="Nova senha" error={fieldError(state, "password")} hint="Pelo menos 8 caracteres.">
-        {(props) => <Input {...props} name="password" type="password" autoComplete="new-password" minLength={8} required />}
+      <Field
+        label="Nova senha"
+        error={fieldError(state, "password")}
+        hint="Pelo menos 8 caracteres."
+      >
+        {(props) => (
+          <Input
+            {...props}
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            required
+          />
+        )}
       </Field>
-      <SubmitButton size="lg" pendingLabel="Salvando…">Salvar nova senha</SubmitButton>
+      <SubmitButton size="lg" pendingLabel="Salvando…">
+        Salvar nova senha
+      </SubmitButton>
     </ActionForm>
   );
 }

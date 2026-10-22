@@ -11,7 +11,9 @@ export function fail(message: string, fieldErrors?: Record<string, string>): Act
 }
 
 /** Converte erros do Zod em mensagens por campo (a primeira de cada campo). */
-export function zodFieldErrors(issues: { path: PropertyKey[]; message: string }[]): Record<string, string> {
+export function zodFieldErrors(
+  issues: { path: PropertyKey[]; message: string }[],
+): Record<string, string> {
   const errors: Record<string, string> = {};
   for (const issue of issues) {
     const key = issue.path.map(String).join(".");

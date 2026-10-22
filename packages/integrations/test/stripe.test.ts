@@ -17,7 +17,12 @@ const subscription = {
       {
         id: "si_1",
         current_period_end: 1_800_000_000,
-        price: { id: "price_1", unit_amount: 14900, currency: "brl", recurring: { interval: "month" } },
+        price: {
+          id: "price_1",
+          unit_amount: 14900,
+          currency: "brl",
+          recurring: { interval: "month" },
+        },
       },
     ],
   },
@@ -44,16 +49,26 @@ describe("Stripe", () => {
 
   it("valida a assinatura do webhook e identifica a assinatura afetada", () => {
     const secret = "whsec_test_secret";
-    const provider = new StripeBillingProvider({ secretKey: "sk_test_x", webhookSecret: secret, priceId: "price_1" });
+    const provider = new StripeBillingProvider({
+      secretKey: "sk_test_x",
+      webhookSecret: secret,
+      priceId: "price_1",
+    });
     const payload = JSON.stringify({
       id: "evt_1",
       object: "event",
       type: "invoice.payment_failed",
-      data: { object: { id: "in_1", parent: { subscription_details: { subscription: "sub_123" } } } },
+      data: {
+        object: { id: "in_1", parent: { subscription_details: { subscription: "sub_123" } } },
+      },
     });
     const header = new Stripe("sk_test_x").webhooks.generateTestHeaderString({ payload, secret });
     const event = provider.parseWebhook(payload, header);
-    expect(event).toMatchObject({ id: "evt_1", type: "invoice.payment_failed", subscriptionId: "sub_123" });
+    expect(event).toMatchObject({
+      id: "evt_1",
+      type: "invoice.payment_failed",
+      subscriptionId: "sub_123",
+    });
     expect(() => provider.parseWebhook(payload, "t=1,v1=assinatura-falsa")).toThrow();
     expect(() => provider.parseWebhook(payload, null)).toThrow();
   });

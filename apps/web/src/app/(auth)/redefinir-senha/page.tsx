@@ -16,7 +16,10 @@ export default async function ResetPasswordPage(props: PageProps<"/redefinir-sen
           <ResetPasswordForm token={token} />
         ) : (
           <Notice tone="error" title="Este link expirou ou já foi usado.">
-            <Link href="/esqueci-senha" className="font-medium text-azulejo underline underline-offset-2">
+            <Link
+              href="/esqueci-senha"
+              className="font-medium text-azulejo underline underline-offset-2"
+            >
               Peça um novo link
             </Link>
             .

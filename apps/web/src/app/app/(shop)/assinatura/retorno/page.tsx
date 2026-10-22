@@ -37,7 +37,10 @@ export default async function CheckoutReturnPage(props: PageProps<"/app/assinatu
       </h1>
       <p className="mt-3 text-tinta-suave">Isso leva alguns segundos. A página atualiza sozinha.</p>
       <Notice className="mt-8" title="Demorando mais que o normal?">
-        <Link href="/app/assinatura" className="font-medium text-azulejo underline underline-offset-2">
+        <Link
+          href="/app/assinatura"
+          className="font-medium text-azulejo underline underline-offset-2"
+        >
           Volte para a assinatura
         </Link>{" "}
         e confira o status.

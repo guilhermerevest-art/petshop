@@ -29,12 +29,18 @@ export function AccountFooter({
           {others.map((other) => (
             <form key={other.id} action={switchShopAction}>
               <input type="hidden" name="organizationId" value={other.id} />
-              <button type="submit" className="flex h-10 w-full items-center rounded-lg px-2.5 text-left text-[15px] hover:bg-white">
+              <button
+                type="submit"
+                className="flex h-10 w-full items-center rounded-lg px-2.5 text-left text-[15px] hover:bg-white"
+              >
                 Trocar para {other.name}
               </button>
             </form>
           ))}
-          <Link href="/app/novo-pet-shop" className="flex h-10 items-center gap-2 rounded-lg px-2.5 text-[15px] hover:bg-white">
+          <Link
+            href="/app/novo-pet-shop"
+            className="flex h-10 items-center gap-2 rounded-lg px-2.5 text-[15px] hover:bg-white"
+          >
             <Plus className="size-4" aria-hidden /> Abrir outro pet shop
           </Link>
         </div>
@@ -44,7 +50,10 @@ export function AccountFooter({
           {user.name}
         </span>
         <form action={signOutAction}>
-          <button type="submit" className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-sm text-tinta-suave hover:bg-espuma hover:text-tinta">
+          <button
+            type="submit"
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-sm text-tinta-suave hover:bg-espuma hover:text-tinta"
+          >
             <LogOut className="size-4" aria-hidden /> Sair
           </button>
         </form>

@@ -1,13 +1,31 @@
 # PetShop
 
-Plataforma SaaS (multi-tenant) de gestão de ponta a ponta para pet shops: tutores e pets, agenda com autoagendamento, PIX, recibos e lembretes pelo WhatsApp do próprio pet shop, checklist de atendimento, PDV, estoque, recorrência e relatórios.
+Plataforma SaaS (multi-tenant) de gestão para pet shops de banho e tosa: agenda por vagas, WhatsApp do próprio pet shop, PIX direto na conta, checklist de atendimento, vendas, estoque e recorrência.
 
-> Projeto em fase de definição. Comece pelo [PRD](docs/PRD.md).
+## Situação
 
-## Stack prevista
+**Fase 0 (fundação) pronta:**
 
-- **Web:** Next.js + TypeScript na Vercel (região `gru1`)
-- **Banco:** PostgreSQL na VPS em Campinas (Coolify)
-- **WhatsApp:** Evolution API na VPS (Coolify), uma instância por pet shop, conectada por QR Code
-- **Pagamentos dos tutores:** PIX estático (BR Code gerado pelo sistema, com a chave do pet shop)
-- **Assinatura dos pet shops:** Stripe Billing
+- cadastro do pet shop e assinatura pelo Stripe (com simulador para testes);
+- assistente de configuração: dados, horários e vagas, serviços com preço e tempo por porte, PIX com QR Code de teste, conexão do WhatsApp por QR Code ou código de pareamento, convites da equipe;
+- papéis (dono, gerente, recepção, banhista);
+- isolamento entre pet shops garantido pelo banco (RLS);
+- painel da plataforma e worker de monitoramento do WhatsApp.
+
+A seguir vem a Fase 1 (agenda do dia, clientes e pets, checklist, comanda e caixa). Veja o [roadmap no PRD](docs/PRD.md#10-roadmap-por-fases).
+
+## Documentação
+
+- [PRD](docs/PRD.md): produto, regras de negócio e roadmap
+- [Design](docs/design.md): identidade visual e escrita
+- [Desenvolvimento local](docs/desenvolvimento.md)
+- [Implantação](docs/infra.md): Coolify, Vercel, Stripe e Evolution API
+
+## Stack
+
+- **Web:** Next.js 16 + TypeScript + Tailwind na Vercel (`gru1`)
+- **Banco:** PostgreSQL na VPS (Coolify), Drizzle ORM, RLS por pet shop
+- **Autenticação:** Better Auth (organizações = pet shops)
+- **WhatsApp:** Evolution API na VPS, uma instância por pet shop
+- **Pagamentos:** PIX estático (BR Code) dos tutores; Stripe Billing para a assinatura dos pet shops
+- **Worker:** pg-boss em Docker no Coolify

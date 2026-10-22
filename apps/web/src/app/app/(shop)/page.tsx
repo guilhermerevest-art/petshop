@@ -39,10 +39,18 @@ function StatusCell({
   const body = (
     <>
       <span className="text-sm text-tinta-suave">{title}</span>
-      <span className={cn("mt-1 flex items-center gap-2 text-lg font-[650]", tone === "attention" && "text-[#7a4f00]")}>
+      <span
+        className={cn(
+          "mt-1 flex items-center gap-2 text-lg font-[650]",
+          tone === "attention" && "text-[#7a4f00]",
+        )}
+      >
         <span
           aria-hidden
-          className={cn("size-2.5 rounded-[3px]", tone === "ok" ? "bg-azulejo" : tone === "attention" ? "bg-patinho" : "bg-rejunte-forte")}
+          className={cn(
+            "size-2.5 rounded-[3px]",
+            tone === "ok" ? "bg-azulejo" : tone === "attention" ? "bg-patinho" : "bg-rejunte-forte",
+          )}
         />
         {value}
       </span>
@@ -50,7 +58,10 @@ function StatusCell({
     </>
   );
   return href ? (
-    <Link href={href} className="flex flex-col bg-white px-5 py-4 transition-colors hover:bg-espuma">
+    <Link
+      href={href}
+      className="flex flex-col bg-white px-5 py-4 transition-colors hover:bg-espuma"
+    >
       {body}
     </Link>
   ) : (
@@ -64,14 +75,18 @@ export default async function HomePage(props: PageProps<"/app">) {
   const orgId = ctx.organization.id;
 
   const [rules, [serviceCount], pix, whatsapp, [memberCount]] = await Promise.all([
-    inShop(ctx, (tx) => tx.select().from(capacityRules).where(eq(capacityRules.organizationId, orgId))),
+    inShop(ctx, (tx) =>
+      tx.select().from(capacityRules).where(eq(capacityRules.organizationId, orgId)),
+    ),
     inShop(ctx, (tx) =>
       tx
         .select({ value: count() })
         .from(services)
         .where(and(eq(services.organizationId, orgId), isNull(services.deletedAt))),
     ),
-    inShop(ctx, (tx) => tx.query.pixSettings.findFirst({ where: eq(pixSettings.organizationId, orgId) })),
+    inShop(ctx, (tx) =>
+      tx.query.pixSettings.findFirst({ where: eq(pixSettings.organizationId, orgId) }),
+    ),
     getWhatsApp(ctx),
     db().select({ value: count() }).from(member).where(eq(member.organizationId, orgId)),
   ]);
@@ -98,20 +113,28 @@ export default async function HomePage(props: PageProps<"/app">) {
       </div>
 
       {query.aviso === "sem-permissao" ? (
-        <Notice tone="warning" className="mb-6" title="Seu papel na equipe não dá acesso a essa tela.">
+        <Notice
+          tone="warning"
+          className="mb-6"
+          title="Seu papel na equipe não dá acesso a essa tela."
+        >
           Se precisar, peça ao dono do pet shop.
         </Notice>
       ) : null}
 
       {canSetup && pendingStep ? (
-        <section className="mb-8 rounded-painel border border-rejunte bg-white p-5 sm:p-6" aria-labelledby="configuracao">
+        <section
+          className="mb-8 rounded-painel border border-rejunte bg-white p-5 sm:p-6"
+          aria-labelledby="configuracao"
+        >
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 id="configuracao" className="text-xl">
                 Termine de configurar o pet shop
               </h2>
               <p className="mt-1 text-tinta-suave">
-                {done} de {STEPS.length} etapas prontas. Próxima: {STEPS.find((s) => s.key === pendingStep)?.title.toLowerCase()}.
+                {done} de {STEPS.length} etapas prontas. Próxima:{" "}
+                {STEPS.find((s) => s.key === pendingStep)?.title.toLowerCase()}.
               </p>
               <div className="mt-4 flex gap-1.5" aria-hidden>
                 {STEPS.map((step) => (
@@ -119,7 +142,11 @@ export default async function HomePage(props: PageProps<"/app">) {
                     key={step.key}
                     className={cn(
                       "h-3 w-10 rounded-[4px]",
-                      ctx.profile.onboarding[step.key] ? "bg-azulejo" : step.key === pendingStep ? "bg-patinho" : "bg-rejunte",
+                      ctx.profile.onboarding[step.key]
+                        ? "bg-azulejo"
+                        : step.key === pendingStep
+                          ? "bg-patinho"
+                          : "bg-rejunte",
                     )}
                   />
                 ))}
@@ -149,8 +176,18 @@ export default async function HomePage(props: PageProps<"/app">) {
           />
           <StatusCell
             title="WhatsApp"
-            value={whatsapp?.status === "connected" ? "Conectado" : whatsapp?.status === "connecting" ? "Conectando" : "Desconectado"}
-            detail={whatsapp?.status === "connected" && whatsapp.phoneNumber ? formatBrPhone(whatsapp.phoneNumber) : "Conecte para avisar os clientes"}
+            value={
+              whatsapp?.status === "connected"
+                ? "Conectado"
+                : whatsapp?.status === "connecting"
+                  ? "Conectando"
+                  : "Desconectado"
+            }
+            detail={
+              whatsapp?.status === "connected" && whatsapp.phoneNumber
+                ? formatBrPhone(whatsapp.phoneNumber)
+                : "Conecte para avisar os clientes"
+            }
             href={can(ctx.role, "whatsapp.manage") ? "/app/configuracoes/whatsapp" : undefined}
             tone={whatsapp?.status === "connected" ? "ok" : "attention"}
           />
@@ -189,7 +226,10 @@ export default async function HomePage(props: PageProps<"/app">) {
             <h2 id="semana" className="text-xl">
               Sua semana
             </h2>
-            <Link href="/app/configuracoes/horarios" className="text-[15px] font-medium text-azulejo underline underline-offset-2">
+            <Link
+              href="/app/configuracoes/horarios"
+              className="text-[15px] font-medium text-azulejo underline underline-offset-2"
+            >
               Mudar horários
             </Link>
           </div>

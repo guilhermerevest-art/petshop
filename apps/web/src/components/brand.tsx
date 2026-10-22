@@ -14,7 +14,12 @@ export function BrandMark({ className }: { className?: string }) {
 
 export function Brand({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-2.5 text-[19px] font-[650] tracking-tight text-tinta", className)}>
+    <span
+      className={cn(
+        "inline-flex items-center gap-2.5 text-[19px] font-[650] tracking-tight text-tinta",
+        className,
+      )}
+    >
       <BrandMark />
       PetShop
     </span>

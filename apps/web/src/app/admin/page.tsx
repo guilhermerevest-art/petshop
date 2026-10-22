@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { count, desc, eq, sql } from "drizzle-orm";
-import { formatBRL, formatBrPhone, SUBSCRIPTION_STATUS_LABELS, type SubscriptionStatus } from "@petshop/core";
+import {
+  formatBRL,
+  formatBrPhone,
+  SUBSCRIPTION_STATUS_LABELS,
+  type SubscriptionStatus,
+} from "@petshop/core";
 import { member, organization, subscriptions, whatsappInstances, withSystem } from "@petshop/db";
 import { Brand } from "@/components/brand";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +40,10 @@ export default async function AdminPage() {
         trialEnd: subscriptions.trialEnd,
         whatsappStatus: whatsappInstances.status,
         whatsappPhone: whatsappInstances.phoneNumber,
-        members: sql<number>`(select ${count()} from ${member} where ${member.organizationId} = ${organization.id})`.mapWith(Number),
+        members:
+          sql<number>`(select ${count()} from ${member} where ${member.organizationId} = ${organization.id})`.mapWith(
+            Number,
+          ),
       })
       .from(organization)
       .leftJoin(subscriptions, eq(subscriptions.organizationId, organization.id))
@@ -62,7 +70,10 @@ export default async function AdminPage() {
     <div className="min-h-dvh px-4 py-6 sm:px-8">
       <header className="mx-auto flex max-w-[1200px] items-center justify-between">
         <Brand />
-        <Link href="/app" className="text-[15px] font-medium text-azulejo underline underline-offset-2">
+        <Link
+          href="/app"
+          className="text-[15px] font-medium text-azulejo underline underline-offset-2"
+        >
           Voltar ao pet shop
         </Link>
       </header>
@@ -101,22 +112,38 @@ export default async function AdminPage() {
                     <td className="px-4 py-3 tabular">{formatShortDate(row.createdAt)}</td>
                     <td className="px-4 py-3">
                       {status ? (
-                        <Badge tone={status === "active" ? "ok" : status === "trialing" ? "neutral" : "attention"}>
+                        <Badge
+                          tone={
+                            status === "active"
+                              ? "ok"
+                              : status === "trialing"
+                                ? "neutral"
+                                : "attention"
+                          }
+                        >
                           {SUBSCRIPTION_STATUS_LABELS[status]}
                         </Badge>
                       ) : (
                         <Badge>Sem assinatura</Badge>
                       )}
                       {status === "trialing" && row.trialEnd ? (
-                        <span className="mt-1 block text-sm text-tinta-suave">até {formatShortDate(row.trialEnd)}</span>
+                        <span className="mt-1 block text-sm text-tinta-suave">
+                          até {formatShortDate(row.trialEnd)}
+                        </span>
                       ) : null}
                     </td>
-                    <td className="px-4 py-3 tabular">{row.amountCents ? formatBRL(monthly(row.amountCents, row.interval)) : ""}</td>
+                    <td className="px-4 py-3 tabular">
+                      {row.amountCents ? formatBRL(monthly(row.amountCents, row.interval)) : ""}
+                    </td>
                     <td className="px-4 py-3">
                       {row.whatsappStatus === "connected" ? (
-                        <span>{row.whatsappPhone ? formatBrPhone(row.whatsappPhone) : "Conectado"}</span>
+                        <span>
+                          {row.whatsappPhone ? formatBrPhone(row.whatsappPhone) : "Conectado"}
+                        </span>
                       ) : (
-                        <span className="text-tinta-suave">{row.whatsappStatus === "connecting" ? "Conectando" : "Desconectado"}</span>
+                        <span className="text-tinta-suave">
+                          {row.whatsappStatus === "connecting" ? "Conectando" : "Desconectado"}
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3 tabular">{row.members}</td>
@@ -125,7 +152,9 @@ export default async function AdminPage() {
               })}
             </tbody>
           </table>
-          {rows.length === 0 ? <p className="px-4 py-8 text-center text-tinta-suave">Nenhum pet shop ainda.</p> : null}
+          {rows.length === 0 ? (
+            <p className="px-4 py-8 text-center text-tinta-suave">Nenhum pet shop ainda.</p>
+          ) : null}
         </div>
       </main>
     </div>

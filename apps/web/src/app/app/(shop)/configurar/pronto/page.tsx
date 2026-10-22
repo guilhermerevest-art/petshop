@@ -30,7 +30,10 @@ export default async function SetupDonePage() {
           <ul className="mt-4 flex flex-col gap-2">
             {pending.map((step) => (
               <li key={step.key}>
-                <Link href={`/app/configurar/${step.key}`} className="font-medium text-azulejo underline underline-offset-2">
+                <Link
+                  href={`/app/configurar/${step.key}`}
+                  className="font-medium text-azulejo underline underline-offset-2"
+                >
                   {step.title}
                 </Link>
                 <span className="text-tinta-suave">: {step.summary.toLowerCase()}</span>
@@ -39,15 +42,19 @@ export default async function SetupDonePage() {
           </ul>
         ) : null}
         <Notice className="mt-8" title="O que vem a seguir">
-          A agenda do dia, o cadastro de clientes e pets, o checklist dos atendimentos e as vendas chegam nas próximas
-          atualizações, já usando os horários, serviços e o WhatsApp que você configurou.
+          A agenda do dia, o cadastro de clientes e pets, o checklist dos atendimentos e as vendas
+          chegam nas próximas atualizações, já usando os horários, serviços e o WhatsApp que você
+          configurou.
         </Notice>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/app" className={buttonClasses({ size: "lg" })}>
             Ir para o início
           </Link>
           {nextPending ? (
-            <Link href={`/app/configurar/${nextPending}`} className={buttonClasses({ size: "lg", variant: "secondary" })}>
+            <Link
+              href={`/app/configurar/${nextPending}`}
+              className={buttonClasses({ size: "lg", variant: "secondary" })}
+            >
               Continuar configurando
             </Link>
           ) : null}

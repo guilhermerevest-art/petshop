@@ -108,7 +108,9 @@ export function WhatsAppConnect({
       <Panel>
         <PanelSection className="grid gap-8 md:grid-cols-[minmax(0,1fr)_280px] md:items-center">
           <div>
-            <h2 className="text-xl">{pairing ? "Digite o código no celular" : "Leia o QR Code com o celular do pet shop"}</h2>
+            <h2 className="text-xl">
+              {pairing ? "Digite o código no celular" : "Leia o QR Code com o celular do pet shop"}
+            </h2>
             <ol className="mt-4 flex flex-col gap-3 text-[15px]">
               {[
                 "Abra o WhatsApp no celular do pet shop.",
@@ -153,7 +155,9 @@ export function WhatsAppConnect({
               </div>
             )}
             <p className="text-center text-sm text-tinta-suave">
-              {pairing ? "O código vale por alguns minutos." : "O código se renova sozinho até ser lido."}
+              {pairing
+                ? "O código vale por alguns minutos."
+                : "O código se renova sozinho até ser lido."}
             </p>
           </div>
         </PanelSection>
@@ -175,7 +179,8 @@ export function WhatsAppConnect({
           <ActionFeedback state={state} />
           {initial.connectedAt ? (
             <Notice tone="warning" title="O WhatsApp está desconectado.">
-              As mensagens para os clientes ficam guardadas e são enviadas quando você conectar de novo.
+              As mensagens para os clientes ficam guardadas e são enviadas quando você conectar de
+              novo.
             </Notice>
           ) : null}
           <ChoiceCards
@@ -184,13 +189,31 @@ export function WhatsAppConnect({
             value={method}
             onChange={setMethod}
             options={[
-              { value: "qr", label: "Ler um QR Code", description: "Melhor se você está no computador e tem o celular do pet shop por perto." },
-              { value: "code", label: "Digitar um código no celular", description: "Melhor se você está configurando pelo próprio celular do pet shop." },
+              {
+                value: "qr",
+                label: "Ler um QR Code",
+                description:
+                  "Melhor se você está no computador e tem o celular do pet shop por perto.",
+              },
+              {
+                value: "code",
+                label: "Digitar um código no celular",
+                description: "Melhor se você está configurando pelo próprio celular do pet shop.",
+              },
             ]}
           />
           {method === "code" ? (
             <Field label="Número do WhatsApp do pet shop" error={fieldError(state, "phone")}>
-              {(props) => <Input {...props} name="phone" type="tel" inputMode="tel" placeholder="(19) 98765-4321" defaultValue={defaultPhone ? formatBrPhone(defaultPhone) : ""} />}
+              {(props) => (
+                <Input
+                  {...props}
+                  name="phone"
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="(19) 98765-4321"
+                  defaultValue={defaultPhone ? formatBrPhone(defaultPhone) : ""}
+                />
+              )}
             </Field>
           ) : null}
         </PanelSection>
@@ -198,14 +221,25 @@ export function WhatsAppConnect({
           <p className="font-medium">Antes de conectar</p>
           <ul className="flex list-disc flex-col gap-1.5 pl-5 text-[15px] text-tinta-suave">
             <li>Use, de preferência, um número só do pet shop.</li>
-            <li>O celular continua funcionando normalmente: vocês seguem conversando com os clientes por ele.</li>
             <li>
-              A conexão usa o WhatsApp Web. Enviar muitas mensagens para quem não espera pode fazer o WhatsApp bloquear o número. O
-              sistema só envia o que o cliente espera receber: confirmações, lembretes e recibos.
+              O celular continua funcionando normalmente: vocês seguem conversando com os clientes
+              por ele.
+            </li>
+            <li>
+              A conexão usa o WhatsApp Web. Enviar muitas mensagens para quem não espera pode fazer
+              o WhatsApp bloquear o número. O sistema só envia o que o cliente espera receber:
+              confirmações, lembretes e recibos.
             </li>
           </ul>
-          <Checkbox name="terms" required defaultChecked={initial.termsAccepted} label="Li e entendi as orientações." />
-          {fieldError(state, "terms") ? <p className="text-sm font-medium text-alerta">{fieldError(state, "terms")}</p> : null}
+          <Checkbox
+            name="terms"
+            required
+            defaultChecked={initial.termsAccepted}
+            label="Li e entendi as orientações."
+          />
+          {fieldError(state, "terms") ? (
+            <p className="text-sm font-medium text-alerta">{fieldError(state, "terms")}</p>
+          ) : null}
           <div>
             <SubmitButton size="lg" pendingLabel="Preparando…">
               <Smartphone className="size-5" aria-hidden /> Conectar WhatsApp
@@ -217,7 +251,15 @@ export function WhatsAppConnect({
   );
 }
 
-function Connected({ view, defaultPhone, nextHref }: { view: WhatsAppView; defaultPhone: string | null; nextHref?: string }) {
+function Connected({
+  view,
+  defaultPhone,
+  nextHref,
+}: {
+  view: WhatsAppView;
+  defaultPhone: string | null;
+  nextHref?: string;
+}) {
   const [testState, testAction] = useActionState(sendTestMessageAction, null);
   const initials = (view.profileName ?? "WA").slice(0, 2).toUpperCase();
   return (
@@ -226,7 +268,11 @@ function Connected({ view, defaultPhone, nextHref }: { view: WhatsAppView; defau
         <PanelSection className="flex items-center gap-4">
           {view.profilePictureUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={view.profilePictureUrl} alt="" className="size-14 rounded-full border border-rejunte object-cover" />
+            <img
+              src={view.profilePictureUrl}
+              alt=""
+              className="size-14 rounded-full border border-rejunte object-cover"
+            />
           ) : (
             <span className="flex size-14 items-center justify-center rounded-full bg-azulejo-claro text-lg font-[650] text-azulejo-escuro">
               {initials}
@@ -237,7 +283,9 @@ function Connected({ view, defaultPhone, nextHref }: { view: WhatsAppView; defau
               <CheckCircle2 className="size-5 text-azulejo" aria-hidden /> Conectado
             </p>
             <p className="truncate text-tinta-suave">
-              {[view.profileName, view.phoneNumber ? formatBrPhone(view.phoneNumber) : null].filter(Boolean).join(", ")}
+              {[view.profileName, view.phoneNumber ? formatBrPhone(view.phoneNumber) : null]
+                .filter(Boolean)
+                .join(", ")}
             </p>
           </div>
         </PanelSection>
@@ -250,7 +298,15 @@ function Connected({ view, defaultPhone, nextHref }: { view: WhatsAppView; defau
               error={fieldError(testState, "phone")}
             >
               {(props) => (
-                <Input {...props} name="phone" type="tel" inputMode="tel" defaultValue={defaultPhone ? formatBrPhone(defaultPhone) : ""} placeholder="(19) 98765-4321" className="max-w-xs" />
+                <Input
+                  {...props}
+                  name="phone"
+                  type="tel"
+                  inputMode="tel"
+                  defaultValue={defaultPhone ? formatBrPhone(defaultPhone) : ""}
+                  placeholder="(19) 98765-4321"
+                  className="max-w-xs"
+                />
               )}
             </Field>
             <div>
@@ -262,12 +318,19 @@ function Connected({ view, defaultPhone, nextHref }: { view: WhatsAppView; defau
         </PanelSection>
         <PanelSection>
           <details>
-            <summary className="cursor-pointer text-[15px] text-tinta-suave">Desconectar este número</summary>
+            <summary className="cursor-pointer text-[15px] text-tinta-suave">
+              Desconectar este número
+            </summary>
             <div className="mt-3 flex flex-col gap-3">
               <p className="text-[15px] text-tinta-suave">
-                Os clientes param de receber confirmações e lembretes até você conectar um número de novo.
+                Os clientes param de receber confirmações e lembretes até você conectar um número de
+                novo.
               </p>
-              <ActionButton action={disconnectWhatsAppAction} variant="danger" pendingLabel="Desconectando…">
+              <ActionButton
+                action={disconnectWhatsAppAction}
+                variant="danger"
+                pendingLabel="Desconectando…"
+              >
                 Desconectar WhatsApp
               </ActionButton>
             </div>

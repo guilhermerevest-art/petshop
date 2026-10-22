@@ -36,7 +36,8 @@ export async function POST(request: Request) {
       await applyWebhookConnection(event.instance, connection);
     } else if (event.event === "messages.update") {
       const id = typeof event.data.keyId === "string" ? event.data.keyId : null;
-      const status = typeof event.data.status === "string" ? STATUS_MAP[event.data.status] : undefined;
+      const status =
+        typeof event.data.status === "string" ? STATUS_MAP[event.data.status] : undefined;
       if (id && status) {
         await withSystem(db(), (tx) =>
           tx.update(messages).set({ status }).where(eq(messages.providerMessageId, id)),

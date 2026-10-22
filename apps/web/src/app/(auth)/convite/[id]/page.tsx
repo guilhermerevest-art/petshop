@@ -42,7 +42,8 @@ export default async function InvitationPage(props: PageProps<"/convite/[id]">) 
     <>
       <h1 className="text-[30px]">Você foi convidado para o {invitation.organizationName}</h1>
       <p className="mt-2 mb-8 text-tinta-suave">
-        {invitation.inviterName} chamou você para a equipe como <strong className="font-medium text-tinta">{invitation.roleLabel}</strong>.
+        {invitation.inviterName} chamou você para a equipe como{" "}
+        <strong className="font-medium text-tinta">{invitation.roleLabel}</strong>.
       </p>
     </>
   );
@@ -52,7 +53,10 @@ export default async function InvitationPage(props: PageProps<"/convite/[id]">) 
       return (
         <>
           {intro}
-          <AcceptInvitationButton invitationId={invitation.id} organizationName={invitation.organizationName} />
+          <AcceptInvitationButton
+            invitationId={invitation.id}
+            organizationName={invitation.organizationName}
+          />
         </>
       );
     }
@@ -60,7 +64,8 @@ export default async function InvitationPage(props: PageProps<"/convite/[id]">) 
       <>
         {intro}
         <Notice tone="warning" title="Este convite é para outro e-mail.">
-          Você está conectado como {session.user.email}, mas o convite foi enviado para {invitation.email}.
+          Você está conectado como {session.user.email}, mas o convite foi enviado para{" "}
+          {invitation.email}.
         </Notice>
         <form action={signOutAction} className="mt-6">
           <Button type="submit" variant="secondary" size="lg">
@@ -76,7 +81,9 @@ export default async function InvitationPage(props: PageProps<"/convite/[id]">) 
       {intro}
       {invitation.hasAccount ? (
         <>
-          <p className="mb-5 text-[15px] text-tinta-suave">Você já tem conta. Entre para aceitar o convite.</p>
+          <p className="mb-5 text-[15px] text-tinta-suave">
+            Você já tem conta. Entre para aceitar o convite.
+          </p>
           <SignInForm next={`/convite/${invitation.id}`} email={invitation.email} />
         </>
       ) : (

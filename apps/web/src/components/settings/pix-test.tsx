@@ -18,7 +18,11 @@ export async function PixTest({
     amountCents: TEST_AMOUNT,
     txid: "TESTE",
   });
-  const qr = await QRCode.toDataURL(payload, { margin: 1, width: 240, color: { dark: "#10293a", light: "#ffffff" } });
+  const qr = await QRCode.toDataURL(payload, {
+    margin: 1,
+    width: 240,
+    color: { dark: "#10293a", light: "#ffffff" },
+  });
 
   return (
     <Panel>
@@ -39,7 +43,13 @@ export async function PixTest({
           </p>
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={qr} alt={`QR Code PIX de teste de ${formatBRL(TEST_AMOUNT)}`} width={240} height={240} className="mx-auto rounded-campo border border-rejunte" />
+        <img
+          src={qr}
+          alt={`QR Code PIX de teste de ${formatBRL(TEST_AMOUNT)}`}
+          width={240}
+          height={240}
+          className="mx-auto rounded-campo border border-rejunte"
+        />
       </PanelSection>
       <PanelSection className="flex flex-col gap-3">
         <p className="text-sm text-tinta-suave">Ou use o PIX copia e cola:</p>

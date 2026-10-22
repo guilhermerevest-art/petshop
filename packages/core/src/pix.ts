@@ -108,8 +108,7 @@ export function buildPixPayload(input: PixPayloadInput): string {
     if (room > 0) account += field("02", description.slice(0, room));
   }
 
-  let payload =
-    field("00", "01") + field("26", account) + field("52", "0000") + field("53", "986");
+  let payload = field("00", "01") + field("26", account) + field("52", "0000") + field("53", "986");
 
   if (input.amountCents && input.amountCents > 0) {
     if (!Number.isInteger(input.amountCents)) throw new Error("Valor deve estar em centavos");

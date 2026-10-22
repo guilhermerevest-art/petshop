@@ -11,11 +11,31 @@ export interface StepInfo {
 }
 
 export const STEPS: StepInfo[] = [
-  { key: "dados", title: "Dados do pet shop", summary: "Nome, documento, endereço e contato", optional: false },
-  { key: "horarios", title: "Horários e vagas", summary: "Quando abre e quantos pets atende por horário", optional: false },
-  { key: "servicos", title: "Serviços e preços", summary: "O que vocês fazem, quanto custa e quanto demora por porte", optional: false },
+  {
+    key: "dados",
+    title: "Dados do pet shop",
+    summary: "Nome, documento, endereço e contato",
+    optional: false,
+  },
+  {
+    key: "horarios",
+    title: "Horários e vagas",
+    summary: "Quando abre e quantos pets atende por horário",
+    optional: false,
+  },
+  {
+    key: "servicos",
+    title: "Serviços e preços",
+    summary: "O que vocês fazem, quanto custa e quanto demora por porte",
+    optional: false,
+  },
   { key: "pix", title: "PIX", summary: "Sua chave para receber dos clientes", optional: false },
-  { key: "whatsapp", title: "WhatsApp", summary: "Conectar o número do pet shop para avisar os clientes", optional: true },
+  {
+    key: "whatsapp",
+    title: "WhatsApp",
+    summary: "Conectar o número do pet shop para avisar os clientes",
+    optional: true,
+  },
   { key: "equipe", title: "Equipe", summary: "Convidar quem trabalha com você", optional: true },
 ];
 
@@ -30,12 +50,18 @@ export function nextStep(current: OnboardingStep): OnboardingStep | null {
   return STEP_KEYS[index + 1] ?? null;
 }
 
-export function firstPendingStep(done: Partial<Record<OnboardingStep, string>>): OnboardingStep | null {
+export function firstPendingStep(
+  done: Partial<Record<OnboardingStep, string>>,
+): OnboardingStep | null {
   return STEP_KEYS.find((key) => !done[key]) ?? null;
 }
 
 /** Marca uma etapa como concluída (idempotente). */
-export async function completeStep(tx: Transaction, organizationId: string, step: OnboardingStep): Promise<void> {
+export async function completeStep(
+  tx: Transaction,
+  organizationId: string,
+  step: OnboardingStep,
+): Promise<void> {
   await tx
     .update(shopProfiles)
     .set({

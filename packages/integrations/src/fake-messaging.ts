@@ -28,7 +28,9 @@ function fakeQrCode(seed: number): string {
       const lx = x - ox;
       const ly = y - oy;
       if (lx >= 0 && lx < 7 && ly >= 0 && ly < 7) {
-        return lx === 0 || lx === 6 || ly === 0 || ly === 6 || (lx >= 2 && lx <= 4 && ly >= 2 && ly <= 4);
+        return (
+          lx === 0 || lx === 6 || ly === 0 || ly === 6 || (lx >= 2 && lx <= 4 && ly >= 2 && ly <= 4)
+        );
       }
     }
     return null;
@@ -74,7 +76,8 @@ export class FakeMessagingProvider implements MessagingProvider {
 
   async connect(instanceName: string): Promise<ConnectResult> {
     const instance = this.get(instanceName);
-    if (this.isOpen(instance)) return { state: "open", qrCode: null, pairingCode: null, attempt: 0 };
+    if (this.isOpen(instance))
+      return { state: "open", qrCode: null, pairingCode: null, attempt: 0 };
     if (instance.startedAt === null) {
       instance.startedAt = Date.now();
       instance.pairing = false;
@@ -85,7 +88,8 @@ export class FakeMessagingProvider implements MessagingProvider {
 
   async requestPairingCode(instanceName: string): Promise<ConnectResult> {
     const instance = this.get(instanceName);
-    if (this.isOpen(instance)) return { state: "open", qrCode: null, pairingCode: null, attempt: 0 };
+    if (this.isOpen(instance))
+      return { state: "open", qrCode: null, pairingCode: null, attempt: 0 };
     instance.startedAt = Date.now();
     instance.pairing = true;
     return { state: "connecting", qrCode: null, pairingCode: "PETS2026", attempt: 1 };
@@ -113,7 +117,11 @@ export class FakeMessagingProvider implements MessagingProvider {
     this.instances.set(instanceName, { startedAt: null, pairing: false });
   }
 
-  async sendText(instanceName: string, toDigits: string, text: string): Promise<{ id: string | null }> {
+  async sendText(
+    instanceName: string,
+    toDigits: string,
+    text: string,
+  ): Promise<{ id: string | null }> {
     const instance = this.get(instanceName);
     if (!this.isOpen(instance)) throw new Error("WhatsApp desconectado");
     this.sent.push({ instanceName, to: toDigits, text, at: new Date() });

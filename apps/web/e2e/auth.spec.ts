@@ -26,7 +26,9 @@ test("entrar, sair e mensagens de erro claras", async ({ page }) => {
   const other = await page.context().browser()!.newContext();
   const otherPage = await other.newPage();
   await signUp(otherPage, { shop: "Outro", name: "Outra Pessoa", email });
-  await expect(otherPage.getByText("Já existe uma conta com este e-mail. Entre com sua senha.")).toBeVisible();
+  await expect(
+    otherPage.getByText("Já existe uma conta com este e-mail. Entre com sua senha."),
+  ).toBeVisible();
   await other.close();
 });
 
@@ -46,7 +48,9 @@ test("dados de um pet shop não aparecem para outro", async ({ page, browser }) 
   await otherPage.getByRole("button", { name: "Ativar assinatura de teste" }).click();
   await expect(otherPage).toHaveURL(/\/app\/configurar\/dados$/);
   await otherPage.goto("/app/configurar/servicos");
-  await expect(otherPage.getByRole("heading", { name: "Comece pela lista sugerida" })).toBeVisible();
+  await expect(
+    otherPage.getByRole("heading", { name: "Comece pela lista sugerida" }),
+  ).toBeVisible();
   await expect(otherPage.getByText("Banho e tosa na tesoura")).toBeVisible(); // só na lista sugerida
   await expect(otherPage.getByRole("button", { name: /^Editar / })).toHaveCount(0);
   await other.close();

@@ -25,7 +25,12 @@ export function ChoiceCards<T extends string>({
   columns?: 2 | 3 | 4 | 5;
   legend?: ReactNode;
 }) {
-  const grid = { 2: "sm:grid-cols-2", 3: "sm:grid-cols-3", 4: "sm:grid-cols-4", 5: "sm:grid-cols-5" }[columns];
+  const grid = {
+    2: "sm:grid-cols-2",
+    3: "sm:grid-cols-3",
+    4: "sm:grid-cols-4",
+    5: "sm:grid-cols-5",
+  }[columns];
   return (
     <fieldset>
       {legend ? <legend className="mb-1.5 text-[15px] font-medium">{legend}</legend> : null}
@@ -38,7 +43,9 @@ export function ChoiceCards<T extends string>({
               className={cn(
                 "relative flex cursor-pointer flex-col gap-0.5 rounded-campo border bg-white px-4 py-3 transition-colors",
                 "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-tinta",
-                checked ? "border-azulejo bg-azulejo-claro/50 ring-1 ring-azulejo" : "border-rejunte-forte hover:border-tinta-suave",
+                checked
+                  ? "border-azulejo bg-azulejo-claro/50 ring-1 ring-azulejo"
+                  : "border-rejunte-forte hover:border-tinta-suave",
               )}
             >
               <input
@@ -50,7 +57,9 @@ export function ChoiceCards<T extends string>({
                 className="sr-only"
               />
               <span className="font-medium">{option.label}</span>
-              {option.description ? <span className="text-sm text-tinta-suave">{option.description}</span> : null}
+              {option.description ? (
+                <span className="text-sm text-tinta-suave">{option.description}</span>
+              ) : null}
             </label>
           );
         })}

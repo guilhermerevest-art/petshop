@@ -36,7 +36,14 @@ export default async function SubscriptionPage() {
     return (
       <>
         <PageHeader title="Assinatura" />
-        <Notice tone={ctx.access.canUseApp ? "info" : "warning"} title={ctx.access.canUseApp ? "A assinatura está em dia." : "A assinatura do pet shop não está ativa."}>
+        <Notice
+          tone={ctx.access.canUseApp ? "info" : "warning"}
+          title={
+            ctx.access.canUseApp
+              ? "A assinatura está em dia."
+              : "A assinatura do pet shop não está ativa."
+          }
+        >
           Só o dono do pet shop pode ver e alterar a assinatura.
         </Notice>
       </>
@@ -55,7 +62,9 @@ export default async function SubscriptionPage() {
             <p className="text-lg font-[650]">{plan?.name ?? "Plano PetShop"}</p>
             {plan ? (
               <p className="mt-1">
-                <span className="text-[36px] font-[650] tabular">{formatBRL(plan.amountCents)}</span>{" "}
+                <span className="text-[36px] font-[650] tabular">
+                  {formatBRL(plan.amountCents)}
+                </span>{" "}
                 <span className="text-tinta-suave">{formatInterval(plan.interval)}</span>
               </p>
             ) : null}
@@ -112,7 +121,9 @@ export default async function SubscriptionPage() {
               </p>
             ) : null}
           </div>
-          <Badge tone={tone}>{status ? SUBSCRIPTION_STATUS_LABELS[status] : "Sem assinatura"}</Badge>
+          <Badge tone={tone}>
+            {status ? SUBSCRIPTION_STATUS_LABELS[status] : "Sem assinatura"}
+          </Badge>
         </PanelSection>
         <PanelSection>
           <dl className="grid gap-4 sm:grid-cols-2">
@@ -125,7 +136,9 @@ export default async function SubscriptionPage() {
             {sub.currentPeriodEnd ? (
               <div>
                 <dt className="text-sm text-tinta-suave">
-                  {sub.cancelAtPeriodEnd || status === "canceled" ? "Acesso até" : "Próxima cobrança"}
+                  {sub.cancelAtPeriodEnd || status === "canceled"
+                    ? "Acesso até"
+                    : "Próxima cobrança"}
                 </dt>
                 <dd className="font-medium">{formatDate(sub.currentPeriodEnd)}</dd>
               </div>
@@ -133,7 +146,8 @@ export default async function SubscriptionPage() {
           </dl>
           {sub.cancelAtPeriodEnd && status !== "canceled" ? (
             <p className="mt-4 text-[15px] text-tinta-suave">
-              A assinatura foi cancelada e termina no fim do período pago. Você pode desfazer o cancelamento no portal de pagamento.
+              A assinatura foi cancelada e termina no fim do período pago. Você pode desfazer o
+              cancelamento no portal de pagamento.
             </p>
           ) : null}
         </PanelSection>
@@ -143,7 +157,12 @@ export default async function SubscriptionPage() {
               Assinar de novo
             </ActionButton>
           ) : (
-            <ActionButton action={openPortalAction} variant="secondary" size="lg" pendingLabel="Abrindo…">
+            <ActionButton
+              action={openPortalAction}
+              variant="secondary"
+              size="lg"
+              pendingLabel="Abrindo…"
+            >
               Gerenciar pagamento e faturas
             </ActionButton>
           )}

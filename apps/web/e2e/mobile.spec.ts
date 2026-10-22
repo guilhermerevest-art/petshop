@@ -4,7 +4,9 @@ import { signUp, snap, uniqueEmail } from "./helpers";
 test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
 async function expectNoHorizontalScroll(page: Page) {
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
   expect(overflow, "a página não pode rolar para os lados").toBeLessThanOrEqual(0);
 }
 
@@ -13,7 +15,11 @@ test("telas cabem no celular sem rolagem horizontal", async ({ page }) => {
   await expectNoHorizontalScroll(page);
   await snap(page, "m01-site");
 
-  await signUp(page, { shop: "Pet Shop Celular", name: "Dani Rocha", email: uniqueEmail("mobile") });
+  await signUp(page, {
+    shop: "Pet Shop Celular",
+    name: "Dani Rocha",
+    email: uniqueEmail("mobile"),
+  });
   await expect(page).toHaveURL(/\/app\/assinatura$/);
   await expectNoHorizontalScroll(page);
   await page.getByRole("button", { name: /Começar teste grátis|Assinar/ }).click();

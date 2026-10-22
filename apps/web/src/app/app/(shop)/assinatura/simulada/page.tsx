@@ -29,7 +29,10 @@ export default async function FakeCheckoutPage() {
 
   return (
     <>
-      <PageHeader title="Pagamento de teste" description="Esta tela substitui o Stripe enquanto ele não está configurado." />
+      <PageHeader
+        title="Pagamento de teste"
+        description="Esta tela substitui o Stripe enquanto ele não está configurado."
+      />
       <Notice tone="warning" className="mb-6 max-w-xl" title="Ambiente de teste">
         Nenhuma cobrança é feita. Configure as chaves do Stripe para cobrar de verdade.
       </Notice>
@@ -50,8 +53,12 @@ export default async function FakeCheckoutPage() {
       ) : (
         <Panel className="max-w-xl">
           <PanelSection>
-            <p className="font-medium">Status atual: {status ? SUBSCRIPTION_STATUS_LABELS[status] : "—"}</p>
-            <p className="mt-1 text-[15px] text-tinta-suave">Simule situações para ver como o sistema reage.</p>
+            <p className="font-medium">
+              Status atual: {status ? SUBSCRIPTION_STATUS_LABELS[status] : "—"}
+            </p>
+            <p className="mt-1 text-[15px] text-tinta-suave">
+              Simule situações para ver como o sistema reage.
+            </p>
           </PanelSection>
           <PanelSection className="flex flex-col gap-2">
             {SCENARIOS.map((scenario) => (

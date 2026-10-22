@@ -4,7 +4,9 @@ import { auditLogs, type Transaction } from "@petshop/db";
 /** Registra uma ação sensível na auditoria do pet shop (dentro da mesma transação da alteração). */
 export async function audit(
   tx: Transaction,
-  ctx: { organization: { id: string }; user: { id: string } } | { organizationId: string | null; userId: string | null },
+  ctx:
+    | { organization: { id: string }; user: { id: string } }
+    | { organizationId: string | null; userId: string | null },
   action: string,
   details: { entity?: string; entityId?: string; data?: unknown } = {},
 ): Promise<void> {

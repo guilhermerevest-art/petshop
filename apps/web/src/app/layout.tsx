@@ -23,7 +23,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           position="top-center"
           toastOptions={{
             classNames: {
-              toast: "!rounded-campo !border !border-rejunte !bg-white !text-tinta !font-sans !text-[15px]",
+              toast:
+                "!rounded-campo !border !border-rejunte !bg-white !text-tinta !font-sans !text-[15px]",
               success: "[&_[data-icon]]:!text-azulejo",
               error: "[&_[data-icon]]:!text-alerta",
             },

@@ -8,9 +8,20 @@ const tones = {
   danger: "bg-alerta-claro text-alerta border-alerta/25",
 } as const;
 
-export function Badge({ tone = "neutral", children }: { tone?: keyof typeof tones; children: ReactNode }) {
+export function Badge({
+  tone = "neutral",
+  children,
+}: {
+  tone?: keyof typeof tones;
+  children: ReactNode;
+}) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-sm font-medium", tones[tone])}>
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-sm font-medium",
+        tones[tone],
+      )}
+    >
       {children}
     </span>
   );

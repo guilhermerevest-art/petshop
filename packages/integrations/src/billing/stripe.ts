@@ -27,7 +27,9 @@ const KNOWN_STATUSES: SubscriptionStatus[] = [
 ];
 
 function toStatus(status: string): SubscriptionStatus {
-  return (KNOWN_STATUSES as string[]).includes(status) ? (status as SubscriptionStatus) : "incomplete";
+  return (KNOWN_STATUSES as string[]).includes(status)
+    ? (status as SubscriptionStatus)
+    : "incomplete";
 }
 
 const fromUnix = (value: number | null | undefined) => (value ? new Date(value * 1000) : null);
@@ -48,7 +50,8 @@ export const STRIPE_SUBSCRIPTION_EVENTS = new Set([
 export function mapStripeSubscription(subscription: Stripe.Subscription): BillingSubscription {
   const item = subscription.items.data[0];
   const price = item?.price;
-  const customerId = typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
+  const customerId =
+    typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
   return {
     organizationId: subscription.metadata?.organizationId ?? null,
     provider: "stripe",
@@ -72,14 +75,19 @@ function subscriptionIdFromEvent(event: Stripe.Event): string | null {
   if (event.type.startsWith("customer.subscription.")) return (object.id as string) ?? null;
   if (event.type === "checkout.session.completed") {
     const subscription = object.subscription;
-    return typeof subscription === "string" ? subscription : ((subscription as { id?: string } | null)?.id ?? null);
+    return typeof subscription === "string"
+      ? subscription
+      : ((subscription as { id?: string } | null)?.id ?? null);
   }
   if (event.type.startsWith("invoice.")) {
-    const parent = object.parent as { subscription_details?: { subscription?: string | { id: string } } } | null;
+    const parent = object.parent as {
+      subscription_details?: { subscription?: string | { id: string } };
+    } | null;
     const fromParent = parent?.subscription_details?.subscription;
     if (fromParent) return typeof fromParent === "string" ? fromParent : fromParent.id;
     const legacy = object.subscription;
-    if (legacy) return typeof legacy === "string" ? legacy : ((legacy as { id: string }).id ?? null);
+    if (legacy)
+      return typeof legacy === "string" ? legacy : ((legacy as { id: string }).id ?? null);
   }
   return null;
 }
@@ -117,11 +125,17 @@ export class StripeBillingProvider implements BillingProvider {
       client_reference_id: params.organizationId,
       metadata: { organizationId: params.organizationId },
       subscription_data: {
-        metadata: { organizationId: params.organizationId, organizationName: params.organizationName },
+        metadata: {
+          organizationId: params.organizationId,
+          organizationName: params.organizationName,
+        },
         ...(trialDays > 0 ? { trial_period_days: trialDays } : {}),
       },
       ...(params.existingCustomerId
-        ? { customer: params.existingCustomerId, customer_update: { name: "auto", address: "auto" } }
+        ? {
+            customer: params.existingCustomerId,
+            customer_update: { name: "auto", address: "auto" },
+          }
         : { customer_email: params.customerEmail }),
       billing_address_collection: "required",
       tax_id_collection: { enabled: true },
@@ -149,18 +163,32 @@ export class StripeBillingProvider implements BillingProvider {
   }
 
   async getCheckoutSubscription(sessionId: string): Promise<BillingSubscription | null> {
-    const session = await this.stripe.checkout.sessions.retrieve(sessionId, { expand: ["subscription"] });
+    const session = await this.stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["subscription"],
+    });
     const subscription = session.subscription;
     if (!subscription || typeof subscription === "string") {
       return typeof subscription === "string" ? this.getSubscription(subscription) : null;
     }
     const mapped = mapStripeSubscription(subscription);
-    return { ...mapped, organizationId: mapped.organizationId ?? session.client_reference_id ?? null };
+    return {
+      ...mapped,
+      organizationId: mapped.organizationId ?? session.client_reference_id ?? null,
+    };
   }
 
   parseWebhook(rawBody: string, signature: string | null): BillingWebhookEvent {
     if (!signature) throw new Error("Assinatura do webhook ausente");
-    const event = this.stripe.webhooks.constructEvent(rawBody, signature, this.config.webhookSecret);
-    return { id: event.id, type: event.type, subscriptionId: subscriptionIdFromEvent(event), payload: event };
+    const event = this.stripe.webhooks.constructEvent(
+      rawBody,
+      signature,
+      this.config.webhookSecret,
+    );
+    return {
+      id: event.id,
+      type: event.type,
+      subscriptionId: subscriptionIdFromEvent(event),
+      payload: event,
+    };
   }
 }

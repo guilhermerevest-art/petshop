@@ -2,11 +2,18 @@ import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 export function Panel({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-painel border border-rejunte bg-white", className)} {...props} />;
+  return (
+    <div className={cn("rounded-painel border border-rejunte bg-white", className)} {...props} />
+  );
 }
 
 export function PanelSection({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("border-t border-rejunte p-5 first:border-t-0 sm:p-6", className)} {...props} />;
+  return (
+    <div
+      className={cn("border-t border-rejunte p-5 first:border-t-0 sm:p-6", className)}
+      {...props}
+    />
+  );
 }
 
 export function PageHeader({

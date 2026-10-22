@@ -1,3 +1,9 @@
 pnpm-lock.yaml
 packages/db/migrations
 .claude
+*.md
+**/.next
+**/dist
+**/test-results
+**/playwright-report
+**/next-env.d.ts

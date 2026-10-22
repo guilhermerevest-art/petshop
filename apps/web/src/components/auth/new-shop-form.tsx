@@ -16,7 +16,9 @@ export function NewShopForm() {
       <Field label="Nome do pet shop" error={fieldError(state, "shopName")}>
         {(props) => <Input {...props} name="shopName" autoComplete="organization" required />}
       </Field>
-      <SubmitButton size="lg" pendingLabel="Criando…">Criar pet shop</SubmitButton>
+      <SubmitButton size="lg" pendingLabel="Criando…">
+        Criar pet shop
+      </SubmitButton>
     </ActionForm>
   );
 }
