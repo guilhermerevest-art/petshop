@@ -2,11 +2,12 @@ import "server-only";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { organization } from "better-auth/plugins";
+import { organization, username } from "better-auth/plugins";
 import { schema } from "@petshop/db";
 import { db } from "./db";
 import { env } from "./env";
-import { ac, roles, ROLE_LABELS, isRole } from "./permissions";
+import { ac, roles } from "./permissions";
+import { USERNAME_RE } from "./usernames";
 import { mailer } from "./providers";
 
 function createAuth() {
@@ -62,15 +63,12 @@ function createAuth() {
         allowUserToCreateOrganization: true,
         invitationExpiresIn: 60 * 60 * 24 * 7,
         cancelPendingInvitationsOnReInvite: true,
-        sendInvitationEmail: async (data) => {
-          const role = isRole(data.role) ? ROLE_LABELS[data.role] : data.role;
-          const link = new URL(`/convite/${data.id}`, e.APP_URL).toString();
-          await mailer().send({
-            to: data.email,
-            subject: `${data.inviter.user.name} convidou você para ${data.organization.name}`,
-            text: `Olá!\n\n${data.inviter.user.name} convidou você para fazer parte da equipe do ${data.organization.name} como ${role}.\n\nPara aceitar, abra o link (vale por 7 dias):\n${link}`,
-          });
-        },
+      }),
+      // Equipe entra com usuário e senha criados pelo dono ou gerente (sem e-mail).
+      username({
+        minUsernameLength: 3,
+        maxUsernameLength: 30,
+        usernameValidator: (value) => USERNAME_RE.test(value),
       }),
       nextCookies(),
     ],

@@ -46,9 +46,12 @@ export function AccountFooter({
         </div>
       </details>
       <div className="flex items-center gap-2 px-3 py-1">
-        <span className="min-w-0 flex-1 truncate text-sm text-tinta-suave" title={user.email}>
+        <Link
+          href="/app/conta"
+          className="min-w-0 flex-1 truncate rounded-md text-sm text-tinta-suave hover:text-tinta"
+        >
           {user.name}
-        </span>
+        </Link>
         <form action={signOutAction}>
           <button
             type="submit"

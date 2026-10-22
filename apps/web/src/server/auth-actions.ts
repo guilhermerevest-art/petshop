@@ -105,8 +105,12 @@ export async function signUpAction(
   redirect("/app/assinatura");
 }
 
-const signInSchema = z.object({ email, password: z.string().min(1, "Digite sua senha.") });
+const signInSchema = z.object({
+  login: z.string().trim().min(1, "Digite seu e-mail ou usuário."),
+  password: z.string().min(1, "Digite sua senha."),
+});
 
+/** Dono entra com e-mail; equipe entra com o usuário criado pelo dono ou gerente. */
 export async function signInAction(
   _: ActionResult | null,
   formData: FormData,
@@ -114,12 +118,51 @@ export async function signInAction(
   const parsed = signInSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success)
     return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
+  const { login, password } = parsed.data;
   try {
-    await auth().api.signInEmail({ body: parsed.data, headers: await headers() });
+    if (login.includes("@")) {
+      await auth().api.signInEmail({
+        body: { email: login.toLowerCase(), password },
+        headers: await headers(),
+      });
+    } else {
+      await auth().api.signInUsername({
+        body: { username: login.toLowerCase(), password },
+        headers: await headers(),
+      });
+    }
   } catch (error) {
     return fail(authErrorMessage(error, "Não foi possível entrar. Tente de novo."));
   }
   redirect(safeNext(formData.get("next")));
+}
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Digite a senha atual."),
+  newPassword: password,
+});
+
+export async function changePasswordAction(
+  _: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const parsed = changePasswordSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success)
+    return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
+  try {
+    await auth().api.changePassword({
+      body: { ...parsed.data, revokeOtherSessions: true },
+      headers: await headers(),
+    });
+  } catch (error) {
+    const message = authErrorMessage(error, "Não foi possível trocar a senha.");
+    return fail(
+      message,
+      message.includes("incorret") ? { currentPassword: "Senha atual incorreta." } : undefined,
+    );
+  }
+  // A troca renova a sessão: recarrega a página já com a sessão nova.
+  redirect("/app/conta?senha=alterada");
 }
 
 export async function signOutAction(): Promise<void> {

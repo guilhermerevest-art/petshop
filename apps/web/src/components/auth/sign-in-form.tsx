@@ -1,28 +1,31 @@
 "use client";
 
-import { ActionForm } from "@/components/ui/action-form";
-
 import Link from "next/link";
 import { useActionState } from "react";
 import { ActionFeedback, fieldError } from "@/components/action-feedback";
+import { ActionForm } from "@/components/ui/action-form";
 import { Field, Input } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { signInAction } from "@/server/auth-actions";
 
-export function SignInForm({ next, email }: { next?: string; email?: string }) {
+export function SignInForm({ next }: { next?: string }) {
   const [state, action] = useActionState(signInAction, null);
   return (
     <ActionForm action={action} className="flex flex-col gap-5" noValidate>
       <ActionFeedback state={state} />
       {next ? <input type="hidden" name="next" value={next} /> : null}
-      <Field label="E-mail" error={fieldError(state, "email")}>
+      <Field
+        label="E-mail ou usuário"
+        hint="A equipe entra com o usuário criado pelo dono ou gerente."
+        error={fieldError(state, "login")}
+      >
         {(props) => (
           <Input
             {...props}
-            name="email"
-            type="email"
-            autoComplete="email"
-            defaultValue={email}
+            name="login"
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
             required
           />
         )}

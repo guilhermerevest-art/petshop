@@ -35,6 +35,7 @@ const CAPABILITIES = {
   "shop.edit": ["owner", "manager"],
   "schedule.edit": ["owner", "manager"],
   "services.edit": ["owner", "manager"],
+  "services.view": ["owner", "manager", "reception"],
   "team.manage": ["owner", "manager"],
   "whatsapp.manage": ["owner", "manager"],
   "pix.manage": ["owner"],

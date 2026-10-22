@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { and, asc, eq, gt, isNull } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import {
   formatBrPhone,
   formatDocument,
@@ -10,7 +10,6 @@ import {
 } from "@petshop/core";
 import {
   capacityRules,
-  invitation,
   member,
   pixSettings,
   servicePrices,
@@ -21,9 +20,8 @@ import {
 import { buttonClasses, Button } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
 import { db } from "@/lib/db";
-import { appUrl } from "@/lib/env";
 import { nextStep } from "@/lib/onboarding";
-import { can, isRole } from "@/lib/permissions";
+import { can, primaryRole } from "@/lib/permissions";
 import { inShop, type ShopContext } from "@/lib/shop";
 import { SUGGESTED_SERVICES } from "@/lib/suggested-services";
 import { getWhatsApp, toView } from "@/lib/whatsapp";
@@ -265,50 +263,34 @@ export async function StepContent({
           userId: user.id,
           name: user.name,
           email: user.email,
+          username: user.username,
           phone: user.phone,
         })
         .from(member)
         .innerJoin(user, eq(user.id, member.userId))
         .where(eq(member.organizationId, orgId))
         .orderBy(asc(member.createdAt));
-      const pending = await db()
-        .select()
-        .from(invitation)
-        .where(
-          and(
-            eq(invitation.organizationId, orgId),
-            eq(invitation.status, "pending"),
-            gt(invitation.expiresAt, new Date()),
-          ),
-        )
-        .orderBy(asc(invitation.createdAt));
       const whatsapp = await getWhatsApp(ctx);
       return (
         <>
           <TeamManager
             canManage={can(ctx.role, "team.manage")}
             whatsappConnected={whatsapp?.status === "connected"}
+            shopSlug={ctx.organization.slug}
             members={members.map((m) => ({
               id: m.id,
               name: m.name,
-              email: m.email,
+              login: m.username ?? m.email,
               phone: m.phone,
-              role: isRole(m.role.split(",")[0]) ? (m.role.split(",")[0] as never) : "groomer",
+              role: primaryRole(m.role),
               isYou: m.userId === ctx.user.id,
-            }))}
-            invitations={pending.map((i) => ({
-              id: i.id,
-              email: i.email,
-              role: isRole(i.role) ? i.role : "groomer",
-              link: appUrl(`/convite/${i.id}`),
-              expiresAt: i.expiresAt.toISOString(),
             }))}
           />
           {wizard ? (
             <WizardFooter
               step="equipe"
-              canContinue={members.length > 1 || pending.length > 0}
-              optional={members.length <= 1 && pending.length === 0}
+              canContinue={members.length > 1}
+              optional={members.length <= 1}
             />
           ) : null}
         </>

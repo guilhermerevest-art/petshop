@@ -7,7 +7,7 @@ Plataforma SaaS (multi-tenant) de gestão para pet shops de banho e tosa: agenda
 **Fase 0 (fundação) pronta:**
 
 - cadastro do pet shop e assinatura pelo Stripe (com simulador para testes);
-- assistente de configuração: dados, horários e vagas, serviços com preço e tempo por porte, PIX com QR Code de teste, conexão do WhatsApp por QR Code ou código de pareamento, convites da equipe;
+- assistente de configuração: dados, horários e vagas, serviços com preço e tempo por porte, PIX com QR Code de teste, conexão do WhatsApp por QR Code ou código de pareamento, acessos da equipe com usuário e senha criados pelo dono;
 - papéis (dono, gerente, recepção, banhista);
 - isolamento entre pet shops garantido pelo banco (RLS);
 - painel da plataforma e worker de monitoramento do WhatsApp.

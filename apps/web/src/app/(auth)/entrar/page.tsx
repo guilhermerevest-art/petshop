@@ -15,7 +15,9 @@ export default async function SignInPage(props: PageProps<"/entrar">) {
   return (
     <>
       <h1 className="text-[30px]">Entrar</h1>
-      <p className="mt-2 mb-8 text-tinta-suave">Use o e-mail e a senha da sua conta.</p>
+      <p className="mt-2 mb-8 text-tinta-suave">
+        Dono do pet shop entra com o e-mail; a equipe, com o usuário.
+      </p>
       {query.senha === "alterada" ? (
         <Notice tone="success" className="mb-6">
           Senha alterada. Entre com a nova senha.

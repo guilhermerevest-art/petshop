@@ -36,7 +36,12 @@ export const STEPS: StepInfo[] = [
     summary: "Conectar o número do pet shop para avisar os clientes",
     optional: true,
   },
-  { key: "equipe", title: "Equipe", summary: "Convidar quem trabalha com você", optional: true },
+  {
+    key: "equipe",
+    title: "Equipe",
+    summary: "Criar o usuário e a senha de quem trabalha com você",
+    optional: true,
+  },
 ];
 
 export const STEP_KEYS = STEPS.map((step) => step.key);

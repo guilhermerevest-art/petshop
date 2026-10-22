@@ -33,7 +33,7 @@ Sem as chaves do Stripe e da Evolution, o sistema usa **simuladores**:
 - o checkout da assinatura é uma tela de teste (`/app/assinatura/simulada`), que também simula atraso e cancelamento;
 - o WhatsApp mostra um QR Code ilustrativo e "conecta" sozinho depois de alguns segundos. As mensagens aparecem no log do servidor.
 
-E-mails (convites, recuperação de senha) também vão para o log enquanto `SMTP_URL` estiver vazio.
+E-mails (recuperação de senha do dono, avisos) também vão para o log enquanto `SMTP_URL` estiver vazio.
 
 ## Rodar
 

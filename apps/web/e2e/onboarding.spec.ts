@@ -73,14 +73,18 @@ test("pet shop novo: conta, assinatura, configuração completa e convite da equ
   await page.getByRole("link", { name: "Continuar" }).click();
   await expect(page).toHaveURL(/\/app\/configurar\/equipe$/);
 
-  // 8. Equipe: convidar uma banhista
-  const groomerEmail = uniqueEmail("banhista");
-  await page.getByLabel("E-mail da pessoa").fill(groomerEmail);
+  // 8. Equipe: criar o acesso de uma banhista (usuário e senha, sem e-mail)
+  const username = `bruno.${Date.now().toString(36)}`;
+  await page.getByLabel("Nome", { exact: true }).fill("Bruno Lima");
+  await expect(page.getByLabel("Usuário para entrar")).toHaveValue(/^bruno\./);
+  await page.getByLabel("Usuário para entrar").fill(username);
+  await page.getByLabel("Senha", { exact: true }).fill("banho-forte-42");
   await page.getByLabel(/Celular com WhatsApp/).fill("(19) 99876-5432");
   await page.getByText("Banhista ou tosador", { exact: true }).click();
-  await page.getByRole("button", { name: "Enviar convite" }).click();
-  await expect(page.getByText("Convite enviado pelo WhatsApp.")).toBeVisible();
-  const inviteLink = (await page.locator("code").first().textContent())!.trim();
+  await page.getByRole("button", { name: "Criar acesso" }).click();
+  await expect(page.getByText("Acesso de Bruno Lima criado.")).toBeVisible();
+  await expect(page.getByText("Também enviamos pelo WhatsApp.")).toBeVisible();
+  await expect(page.getByText(`Usuário: ${username}`)).toBeVisible();
   await snap(page, "08-equipe");
   await page.getByRole("button", { name: "Continuar" }).click();
   await expect(page).toHaveURL(/\/app\/configurar\/pronto$/);
@@ -92,25 +96,52 @@ test("pet shop novo: conta, assinatura, configuração completa e convite da equ
   await expect(page.getByText("Termine de configurar o pet shop")).toBeHidden();
   await snap(page, "09-inicio");
 
-  // 10. A pessoa convidada cria a conta pelo link e entra na equipe
-  const guest = await browser.newContext();
-  const guestPage = await guest.newPage();
-  await guestPage.goto(inviteLink);
-  await expect(
-    guestPage.getByRole("heading", { name: /convidado para o Pet Shop Bom Banho/ }),
-  ).toBeVisible();
-  await guestPage.getByLabel("Seu nome").fill("Bruno Lima");
-  await guestPage.getByLabel("Seu celular com WhatsApp").fill("(19) 99876-5432");
-  await guestPage.getByLabel("Crie uma senha").fill("senha-forte-456");
-  await snap(guestPage, "10-convite");
-  await guestPage.getByRole("button", { name: "Criar conta e entrar na equipe" }).click();
-  await expect(guestPage).toHaveURL(/\/app$/);
-  await expect(guestPage.getByRole("heading", { name: "Olá, Bruno" })).toBeVisible();
-  // Banhista não vê a assinatura nem a configuração inicial
-  await expect(guestPage.getByRole("link", { name: "Assinatura" })).toHaveCount(0);
-  await guestPage.goto("/app/configuracoes/horarios");
-  await expect(guestPage).toHaveURL(/aviso=sem-permissao/);
-  await guest.close();
+  // 10. A banhista entra com usuário e senha, troca a própria senha e não vê o que não deve
+  const staff = await browser.newContext();
+  const staffPage = await staff.newPage();
+  await staffPage.goto("/entrar");
+  await staffPage.getByLabel("E-mail ou usuário").fill(username.toUpperCase());
+  await staffPage.getByLabel("Senha", { exact: true }).fill("banho-forte-42");
+  await staffPage.getByRole("button", { name: "Entrar" }).click();
+  await expect(staffPage).toHaveURL(/\/app$/);
+  await expect(staffPage.getByRole("heading", { name: "Olá, Bruno" })).toBeVisible();
+  await expect(staffPage.getByRole("link", { name: "Assinatura" })).toHaveCount(0);
+  await staffPage.goto("/app/configuracoes/horarios");
+  await expect(staffPage).toHaveURL(/aviso=sem-permissao/);
+  await staffPage.goto("/app/conta");
+  await expect(staffPage.getByText(username)).toBeVisible();
+  await staffPage.getByLabel("Senha atual").fill("banho-forte-42");
+  await staffPage.getByLabel("Nova senha").fill("minha-senha-nova");
+  await staffPage.getByRole("button", { name: "Trocar senha" }).click();
+  await expect(staffPage).toHaveURL(/\/app\/conta\?senha=alterada$/);
+  await expect(staffPage.getByText("Senha alterada.")).toBeVisible();
+  await snap(staffPage, "10-minha-conta");
+
+  // O dono define uma nova senha: a sessão da banhista termina e só a senha nova funciona
+  await page.goto("/app/configuracoes/equipe");
+  await page.getByText("Definir nova senha").click();
+  await page.getByLabel("Nova senha para Bruno").fill("redefinida-pelo-dono");
+  await page.getByRole("button", { name: "Salvar nova senha" }).click();
+  await expect(page.getByText("Nova senha de Bruno.")).toBeVisible();
+  await staffPage.goto("/app");
+  await expect(staffPage).toHaveURL(/\/entrar/);
+  await staffPage.getByLabel("E-mail ou usuário").fill(username);
+  await staffPage.getByLabel("Senha", { exact: true }).fill("minha-senha-nova");
+  await staffPage.getByRole("button", { name: "Entrar" }).click();
+  await expect(staffPage.getByText("Usuário ou senha incorretos.")).toBeVisible();
+  await staffPage.getByLabel("Senha", { exact: true }).fill("redefinida-pelo-dono");
+  await staffPage.getByRole("button", { name: "Entrar" }).click();
+  await expect(staffPage).toHaveURL(/\/app$/);
+
+  // Removida da equipe, perde o acesso na hora
+  await page.reload();
+  await page.getByText("Remover da equipe").click();
+  await page.getByRole("button", { name: "Remover Bruno" }).click();
+  await expect(page.getByText("Bruno saiu da equipe")).toBeVisible();
+  await expect(page.getByText(`Usuário: ${username}`)).toHaveCount(0);
+  await staffPage.goto("/app");
+  await expect(staffPage).toHaveURL(/\/entrar/);
+  await staff.close();
 
   // 11. Inadimplência: 10 dias de atraso deixam o sistema só para consulta
   await page.goto("/app/assinatura/simulada");

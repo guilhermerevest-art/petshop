@@ -1,4 +1,4 @@
-// Gerado por `pnpm dlx auth@1.7.10 generate` (Better Auth: e-mail/senha, organização, campo phone).
+// Gerado por `pnpm dlx auth@1.7.10 generate` (Better Auth: e-mail/senha, usuário, organização, campo phone).
 // Ao mudar plugins ou campos em apps/web/src/lib/auth.ts, gere de novo e crie uma migração.
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
@@ -15,6 +15,8 @@ export const user = pgTable("user", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
   phone: text("phone"),
+  username: text("username").unique(),
+  displayUsername: text("display_username"),
 });
 
 export const session = pgTable(

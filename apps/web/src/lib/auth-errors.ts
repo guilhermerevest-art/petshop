@@ -13,6 +13,8 @@ const MESSAGES: Record<string, string> = {
   USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL:
     "Já existe uma conta com este e-mail. Entre com sua senha.",
   INVALID_EMAIL_OR_PASSWORD: "E-mail ou senha incorretos.",
+  INVALID_USERNAME_OR_PASSWORD: "Usuário ou senha incorretos.",
+  INVALID_PASSWORD: "Senha atual incorreta.",
   INVALID_EMAIL: "Este e-mail não é válido.",
   PASSWORD_TOO_SHORT: "A senha precisa ter pelo menos 8 caracteres.",
   INVALID_TOKEN: "Este link expirou ou já foi usado. Peça um novo.",

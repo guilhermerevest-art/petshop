@@ -16,6 +16,13 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
     showSetup: done < STEP_KEYS.length && can(ctx.role, "shop.edit"),
     setupProgress: { done, total: STEP_KEYS.length },
     canBilling,
+    settings: {
+      schedule: can(ctx.role, "schedule.edit"),
+      services: can(ctx.role, "services.view"),
+      team: can(ctx.role, "team.manage"),
+      whatsapp: can(ctx.role, "whatsapp.manage"),
+      shop: can(ctx.role, "shop.edit"),
+    },
     isPlatformAdmin: ctx.isPlatformAdmin,
     footer: <AccountFooter user={ctx.user} shop={ctx.organization} role={ctx.role} shops={shops} />,
   };

@@ -126,7 +126,7 @@ Use uma conta Stripe no Brasil, em nome da empresa da plataforma.
 | `PLATFORM_ADMIN_EMAILS` | Seu e-mail, para acessar `/admin` |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID`, `BILLING_TRIAL_DAYS` | Do passo 4 |
 | `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_WEBHOOK_TOKEN` | Do passo 2; o token você gera (`openssl rand -hex 24`) |
-| `SMTP_URL`, `EMAIL_FROM` | Convites e recuperação de senha |
+| `SMTP_URL`, `EMAIL_FROM` | Recuperação de senha do dono e avisos (ex.: WhatsApp desconectado) |
 
 5. **Previews:** os deploys de preview nunca podem usar o banco de produção. Configure as variáveis do ambiente *Preview* apontando para um banco de homologação, com `BILLING_PROVIDER=fake` e `MESSAGING_PROVIDER=fake` (ou chaves de teste).
 

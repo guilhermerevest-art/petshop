@@ -23,6 +23,14 @@ export interface NavProps {
   showSetup: boolean;
   setupProgress: { done: number; total: number };
   canBilling: boolean;
+  /** Itens do menu "Pet shop" que o papel da pessoa pode abrir. */
+  settings: {
+    schedule: boolean;
+    services: boolean;
+    team: boolean;
+    whatsapp: boolean;
+    shop: boolean;
+  };
   isPlatformAdmin: boolean;
   footer: React.ReactNode;
 }
@@ -31,6 +39,7 @@ function NavItems({
   showSetup,
   setupProgress,
   canBilling,
+  settings,
   isPlatformAdmin,
   onNavigate,
 }: NavProps & { onNavigate?: () => void }) {
@@ -49,25 +58,47 @@ function NavItems({
           </span>
         </NavLink>
       ) : null}
-      <p className="mt-5 mb-1 px-3 text-sm font-medium text-tinta-suave">Pet shop</p>
-      <NavLink href="/app/configuracoes/horarios" icon={<CalendarClock />} onNavigate={onNavigate}>
-        Horários e vagas
-      </NavLink>
-      <NavLink href="/app/configuracoes/servicos" icon={<Scissors />} onNavigate={onNavigate}>
-        Serviços e preços
-      </NavLink>
-      <NavLink href="/app/configuracoes/equipe" icon={<Users />} onNavigate={onNavigate}>
-        Equipe
-      </NavLink>
-      <NavLink href="/app/configuracoes/whatsapp" icon={<MessageCircle />} onNavigate={onNavigate}>
-        WhatsApp
-      </NavLink>
-      <NavLink href="/app/configuracoes/pix" icon={<QrCode />} onNavigate={onNavigate}>
-        PIX
-      </NavLink>
-      <NavLink href="/app/configuracoes/dados" icon={<Building2 />} onNavigate={onNavigate}>
-        Dados do pet shop
-      </NavLink>
+      {Object.values(settings).some(Boolean) ? (
+        <p className="mt-5 mb-1 px-3 text-sm font-medium text-tinta-suave">Pet shop</p>
+      ) : null}
+      {settings.schedule ? (
+        <NavLink
+          href="/app/configuracoes/horarios"
+          icon={<CalendarClock />}
+          onNavigate={onNavigate}
+        >
+          Horários e vagas
+        </NavLink>
+      ) : null}
+      {settings.services ? (
+        <NavLink href="/app/configuracoes/servicos" icon={<Scissors />} onNavigate={onNavigate}>
+          Serviços e preços
+        </NavLink>
+      ) : null}
+      {settings.team ? (
+        <NavLink href="/app/configuracoes/equipe" icon={<Users />} onNavigate={onNavigate}>
+          Equipe
+        </NavLink>
+      ) : null}
+      {settings.whatsapp ? (
+        <NavLink
+          href="/app/configuracoes/whatsapp"
+          icon={<MessageCircle />}
+          onNavigate={onNavigate}
+        >
+          WhatsApp
+        </NavLink>
+      ) : null}
+      {settings.shop ? (
+        <>
+          <NavLink href="/app/configuracoes/pix" icon={<QrCode />} onNavigate={onNavigate}>
+            PIX
+          </NavLink>
+          <NavLink href="/app/configuracoes/dados" icon={<Building2 />} onNavigate={onNavigate}>
+            Dados do pet shop
+          </NavLink>
+        </>
+      ) : null}
       {canBilling ? (
         <NavLink href="/app/assinatura" icon={<CreditCard />} onNavigate={onNavigate}>
           Assinatura

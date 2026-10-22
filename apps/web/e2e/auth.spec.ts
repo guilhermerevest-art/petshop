@@ -13,7 +13,7 @@ test("entrar, sair e mensagens de erro claras", async ({ page }) => {
   await page.getByRole("button", { name: "Sair" }).first().click();
   await expect(page).toHaveURL(/\/entrar$/);
 
-  await page.getByLabel("E-mail").fill(email);
+  await page.getByLabel("E-mail ou usuário").fill(email);
   await page.getByLabel("Senha", { exact: true }).fill("senha-errada");
   await page.getByRole("button", { name: "Entrar" }).click();
   await expect(page.getByText("E-mail ou senha incorretos.")).toBeVisible();

@@ -195,27 +195,27 @@ export default async function HomePage(props: PageProps<"/app">) {
             title="PIX"
             value={pix ? "Chave cadastrada" : "Sem chave"}
             detail={pix ? pix.merchantName : "Cadastre para cobrar os clientes"}
-            href="/app/configuracoes/pix"
+            href={can(ctx.role, "shop.edit") ? "/app/configuracoes/pix" : undefined}
             tone={pix ? "ok" : "attention"}
           />
           <StatusCell
             title="Vagas por semana"
             value={String(weeklyCapacity(capacity))}
             detail={capacity.length ? "Conforme a grade de horários" : "Defina os horários"}
-            href="/app/configuracoes/horarios"
+            href={can(ctx.role, "schedule.edit") ? "/app/configuracoes/horarios" : undefined}
             tone={capacity.length ? "ok" : "attention"}
           />
           <StatusCell
             title="Serviços"
             value={String(serviceCount?.value ?? 0)}
             detail="Com preço e tempo por porte"
-            href="/app/configuracoes/servicos"
+            href={can(ctx.role, "services.view") ? "/app/configuracoes/servicos" : undefined}
             tone={serviceCount?.value ? "ok" : "attention"}
           />
           <StatusCell
             title="Equipe"
             value={`${memberCount?.value ?? 1} ${memberCount?.value === 1 ? "pessoa" : "pessoas"}`}
-            href="/app/configuracoes/equipe"
+            href={can(ctx.role, "team.manage") ? "/app/configuracoes/equipe" : undefined}
           />
         </div>
       </section>
@@ -226,12 +226,14 @@ export default async function HomePage(props: PageProps<"/app">) {
             <h2 id="semana" className="text-xl">
               Sua semana
             </h2>
-            <Link
-              href="/app/configuracoes/horarios"
-              className="text-[15px] font-medium text-azulejo underline underline-offset-2"
-            >
-              Mudar horários
-            </Link>
+            {can(ctx.role, "schedule.edit") ? (
+              <Link
+                href="/app/configuracoes/horarios"
+                className="text-[15px] font-medium text-azulejo underline underline-offset-2"
+              >
+                Mudar horários
+              </Link>
+            ) : null}
           </div>
           <WeekGrid rules={capacity} />
         </section>

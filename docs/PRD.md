@@ -1,6 +1,6 @@
 # PRD: Plataforma de Gestão para Pet Shops
 
-> **Status:** rascunho v0.3, em discussão
+> **Status:** rascunho v0.4, em discussão
 > **Data:** 17/10/2026
 > **Nome do produto:** a definir (provisório: "PetShop")
 >
@@ -130,7 +130,7 @@ Depois de assinar, o dono passa por um assistente com passos que podem ser pulad
 2. horário de funcionamento e **grade de capacidade da agenda** (ver [3.5](#35-agenda));
 3. chave PIX (tipo, chave, nome e cidade do recebedor);
 4. **conexão do WhatsApp por QR Code** (ver [3.13](#313-whatsapp-evolution-api));
-5. equipe (convites por e-mail ou WhatsApp);
+5. equipe: o dono ou gerente cria o usuário e a senha de cada pessoa (sem e-mail), com opção de enviar o acesso pelo WhatsApp;
 6. serviços com preço e duração por porte, a partir de uma lista sugerida que o pet shop edita.
 
 #### Outros [F0]
@@ -564,7 +564,7 @@ O PIX estático dos tutores não aparece no diagrama porque não tem integraçã
 | Formulários e validação | React Hook Form + Zod | 🔶 proposta | Mesma validação no cliente e no servidor |
 | ORM e migrações | Drizzle ORM + drizzle-kit | 🔶 proposta | Leve em ambiente serverless, SQL explícito e tipado, suporte a RLS |
 | Pool de conexões | PgBouncer (modo transaction) no Coolify | 🔶 proposta | Necessário com serverless (ver 7.3) |
-| Autenticação | Better Auth | 🔶 proposta | E-mail e senha para a equipe, código por telefone para o tutor (enviado pela Evolution), organizações (= pet shops), convites e papéis |
+| Autenticação | Better Auth | 🔶 proposta | E-mail e senha para o dono, usuário e senha para a equipe (criados pelo dono ou gerente), código por telefone para o tutor (enviado pela Evolution), organizações (= pet shops) e papéis |
 | Filas e agendamentos | pg-boss + worker Node no Coolify | 🔶 proposta | A fila mora no próprio Postgres (sem Redis extra); suporta cron; tarefas longas fora da Vercel |
 | Arquivos (fotos, PDFs) | Armazenamento compatível com S3: MinIO no Coolify ou Cloudflare R2 | 🔶 proposta | Upload direto do navegador com URL assinada; pasta por pet shop |
 | QR Code e PDF | `qrcode` + @react-pdf/renderer | 🔶 proposta | Geração local do QR do PIX e dos recibos |
@@ -659,7 +659,6 @@ Todas as tabelas de negócio têm `id` (UUID), `organization_id`, `created_at` e
 | Plataforma | Pet shop → `organizations` | nome, slug, CNPJ ou CPF, endereço, logo, fuso horário, faixas de peso por porte, configurações |
 | | Usuário → `users` | nome, e-mail, telefone, administrador da plataforma? |
 | | Membro → `members` | usuário, pet shop, papel, ativo |
-| | Convite → `invitations` | pet shop, e-mail ou telefone, papel, expira em |
 | | Plano → `plans` | nome, preço do Stripe (`price_id`), valor, intervalo (mensal ou anual), ativo |
 | | Assinatura → `subscriptions` | pet shop, cliente do Stripe, assinatura do Stripe, plano, status, fim do período atual, fim do teste, cancelar no fim do período |
 | | Configuração PIX → `pix_settings` | pet shop, tipo de chave, chave, nome do recebedor, cidade |
@@ -747,7 +746,7 @@ Cada fase termina com o sistema em produção e em uso.
 - Monorepo, padrões de código, CI (lint, tipos, testes).
 - Coolify: Postgres + PgBouncer + backups automáticos, Evolution API com HTTPS, MinIO, ambiente de homologação.
 - Vercel (plano Pro, região `gru1`), domínio, previews.
-- Base multi-tenant: login da equipe, convites, papéis, isolamento com RLS e testes de isolamento.
+- Base multi-tenant: login da equipe por usuário e senha criados pelo dono, papéis, isolamento com RLS e testes de isolamento.
 - **Cadastro e assinatura pelo Stripe:** plano, checkout, portal de cobrança, webhooks e modos de acesso (completo, somente leitura, suspenso).
 - Assistente de configuração inicial: dados, horário e grade de capacidade, chave PIX, **conexão do WhatsApp por QR Code** com mensagem de teste.
 - Painel mínimo da plataforma: pet shops, status da assinatura, MRR e status do WhatsApp de cada um.
@@ -911,3 +910,4 @@ As metas numéricas serão definidas depois de 30 dias de uso, com a linha de ba
 | 0.1 | 16/10/2026 | Rascunho inicial a partir da conversa de kickoff |
 | 0.2 | 16/10/2026 | SaaS multi-tenant (onboarding, painel da plataforma, isolamento com RLS); serviços cadastrados por pet shop; agenda com início e fim pela duração dos serviços; PIX estático com conferência manual e comprovante pelo WhatsApp; pagamento antecipado não obrigatório; conexão do WhatsApp por QR Code (uma instância da Evolution por pet shop); VPS em Campinas com Vercel em `gru1`; importação de dados movida para a Fase 3 |
 | 0.3 | 17/10/2026 | Agenda por dia e horário com vagas definidas pelo pet shop (grade de capacidade, exceções, ocupação pela duração, encaixes) no lugar da agenda por profissional; preço e duração por porte confirmados; assinatura dos pet shops pelo Stripe desde a Fase 0 (checkout, portal de cobrança, webhooks, inadimplência); modelo de dados e riscos atualizados |
+| 0.4 | 22/10/2026 | Equipe sem convite por e-mail: o dono ou gerente cria usuário e senha de cada pessoa, redefine senhas e remove acessos; cada pessoa troca a própria senha em "Minha conta" |

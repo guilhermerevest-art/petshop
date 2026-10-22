@@ -1,6 +1,5 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { and, eq, isNull, sql } from "drizzle-orm";
@@ -29,16 +28,11 @@ import {
   type OnboardingStep,
 } from "@petshop/db";
 import { audit } from "@/lib/audit";
-import { auth } from "@/lib/auth";
-import { authErrorMessage } from "@/lib/auth-errors";
 import { db } from "@/lib/db";
-import { appUrl } from "@/lib/env";
 import { completeStep, nextStep } from "@/lib/onboarding";
-import { INVITABLE_ROLES, isRole, ROLE_LABELS } from "@/lib/permissions";
 import { SUGGESTED_SERVICES } from "@/lib/suggested-services";
 import { fail, inShop, ok, shopForAction, type ActionResult } from "@/lib/shop";
 import { zodFieldErrors } from "@/lib/action-result";
-import { sendShopMessage } from "@/lib/whatsapp";
 
 /** No assistente, depois de salvar, segue para a próxima etapa. */
 function afterSave(formData: FormData, step: OnboardingStep, message: string): ActionResult {
@@ -458,147 +452,4 @@ export async function finishStepAction(formData: FormData): Promise<void> {
   const next = nextStep(step);
   revalidatePath("/app", "layout");
   redirect(next ? `/app/configurar/${next}` : "/app/configurar/pronto");
-}
-
-// ---------------------------------------------------------------- Equipe
-
-const inviteSchema = z.object({
-  email: z.string().trim().toLowerCase().email("Digite um e-mail válido."),
-  phone: z
-    .string()
-    .trim()
-    .optional()
-    .transform((value, ctx) => {
-      if (!value) return null;
-      const phone = normalizeBrPhone(value);
-      if (!phone) {
-        ctx.addIssue({ code: "custom", message: "Digite o celular com DDD ou deixe em branco." });
-        return z.NEVER;
-      }
-      return phone;
-    }),
-  role: z.enum(INVITABLE_ROLES as ["manager", "reception", "groomer"], {
-    error: "Escolha o papel.",
-  }),
-});
-
-export interface InviteResult {
-  link: string;
-  sentByWhatsApp: boolean;
-}
-
-export async function inviteMemberAction(
-  _: ActionResult<InviteResult> | null,
-  formData: FormData,
-): Promise<ActionResult<InviteResult>> {
-  const ctx = await shopForAction("team.manage");
-  if ("error" in ctx) return fail(ctx.error);
-  const parsed = inviteSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success)
-    return fail("Confira os campos destacados.", zodFieldErrors(parsed.error.issues));
-
-  let invitationId: string;
-  try {
-    const invitation = await auth().api.createInvitation({
-      body: {
-        email: parsed.data.email,
-        role: parsed.data.role,
-        organizationId: ctx.organization.id,
-        resend: true,
-      },
-      headers: await headers(),
-    });
-    invitationId = invitation.id;
-  } catch (error) {
-    return fail(authErrorMessage(error));
-  }
-
-  const link = appUrl(`/convite/${invitationId}`);
-  let sentByWhatsApp = false;
-  if (parsed.data.phone) {
-    const result = await sendShopMessage(
-      ctx,
-      parsed.data.phone,
-      `Olá! ${ctx.user.name} convidou você para a equipe do ${ctx.organization.name} como ${ROLE_LABELS[parsed.data.role]}. Para aceitar, abra: ${link}`,
-      "convite",
-    );
-    sentByWhatsApp = result.ok;
-  }
-  await inShop(ctx, async (tx) => {
-    await completeStep(tx, ctx.organization.id, "equipe");
-    await audit(tx, ctx, "equipe.convite", {
-      entity: "invitation",
-      entityId: invitationId,
-      data: { email: parsed.data.email, papel: parsed.data.role },
-    });
-  });
-  revalidatePath("/app", "layout");
-  return ok(sentByWhatsApp ? "Convite enviado pelo WhatsApp" : "Convite criado", {
-    link,
-    sentByWhatsApp,
-  });
-}
-
-export async function cancelInvitationAction(
-  _: ActionResult | null,
-  formData: FormData,
-): Promise<ActionResult> {
-  const ctx = await shopForAction("team.manage");
-  if ("error" in ctx) return fail(ctx.error);
-  try {
-    await auth().api.cancelInvitation({
-      body: { invitationId: String(formData.get("invitationId")) },
-      headers: await headers(),
-    });
-  } catch (error) {
-    return fail(authErrorMessage(error));
-  }
-  revalidatePath("/app", "layout");
-  return ok("Convite cancelado");
-}
-
-export async function updateMemberRoleAction(
-  _: ActionResult | null,
-  formData: FormData,
-): Promise<ActionResult> {
-  const ctx = await shopForAction("team.manage");
-  if ("error" in ctx) return fail(ctx.error);
-  const memberId = String(formData.get("memberId"));
-  const role = String(formData.get("role"));
-  if (!isRole(role) || role === "owner") return fail("Papel inválido.");
-  try {
-    await auth().api.updateMemberRole({
-      body: { memberId, role, organizationId: ctx.organization.id },
-      headers: await headers(),
-    });
-  } catch (error) {
-    return fail(authErrorMessage(error, "Não foi possível mudar o papel."));
-  }
-  await inShop(ctx, (tx) =>
-    audit(tx, ctx, "equipe.papel", { entity: "member", entityId: memberId, data: { papel: role } }),
-  );
-  revalidatePath("/app", "layout");
-  return ok("Papel atualizado");
-}
-
-export async function removeMemberAction(
-  _: ActionResult | null,
-  formData: FormData,
-): Promise<ActionResult> {
-  const ctx = await shopForAction("team.manage");
-  if ("error" in ctx) return fail(ctx.error);
-  const memberId = String(formData.get("memberId"));
-  try {
-    await auth().api.removeMember({
-      body: { memberIdOrEmail: memberId, organizationId: ctx.organization.id },
-      headers: await headers(),
-    });
-  } catch (error) {
-    return fail(authErrorMessage(error, "Não foi possível remover esta pessoa."));
-  }
-  await inShop(ctx, (tx) =>
-    audit(tx, ctx, "equipe.remocao", { entity: "member", entityId: memberId }),
-  );
-  revalidatePath("/app", "layout");
-  return ok("Pessoa removida da equipe");
 }

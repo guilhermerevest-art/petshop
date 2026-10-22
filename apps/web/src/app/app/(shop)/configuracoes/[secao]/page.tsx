@@ -11,10 +11,10 @@ export const metadata: Metadata = { title: "Configurações" };
 const CAPABILITY: Record<string, Capability | undefined> = {
   dados: "shop.edit",
   horarios: "schedule.edit",
-  servicos: undefined,
+  servicos: "services.view",
   pix: "shop.edit",
   whatsapp: "whatsapp.manage",
-  equipe: undefined,
+  equipe: "team.manage",
 };
 
 export default async function SettingsSectionPage(props: PageProps<"/app/configuracoes/[secao]">) {
